@@ -1,0 +1,126 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoIcon {
+  font-size: 22px;
+  color: var(--accent-green);
+}
+
+.logoText {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.links {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.link {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.link:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.link.active {
+  color: var(--accent-green);
+  background: rgba(29, 185, 84, 0.1);
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.userName {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-green);
+}
+
+.avatarFallback {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gradient-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+
+.logout {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.logout:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+@media (max-width: 768px) {
+  .links { display: none; }
+  .userName { display: none; }
+  .inner { gap: 16px; }
+}

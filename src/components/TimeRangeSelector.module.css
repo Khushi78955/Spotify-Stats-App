@@ -1,0 +1,32 @@
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.tab {
+  padding: 8px 18px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.tab.active {
+  color: var(--accent-green);
+  background: rgba(29, 185, 84, 0.12);
+  font-weight: 600;
+}

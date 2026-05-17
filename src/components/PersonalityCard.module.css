@@ -1,0 +1,239 @@
+.outer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border: 1px solid rgba(29, 185, 84, 0.3);
+  border-radius: 20px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(29, 185, 84, 0.1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerIcon {
+  font-size: 18px;
+  color: var(--accent-green);
+}
+
+.headerTitle {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-green);
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-green);
+}
+
+.avatarFallback {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--gradient-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.userInfo {}
+
+.displayName {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.userId {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.personalityBlock {
+  background: rgba(29, 185, 84, 0.08);
+  border: 1px solid rgba(29, 185, 84, 0.2);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.personalityLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 6px;
+}
+
+.personalityName {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.section {}
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 8px;
+}
+
+.genrePills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.genrePill {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.topItems {
+  display: flex;
+  gap: 16px;
+}
+
+.topItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.topItemLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.topItemImg {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.topItemImgFallback {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.topItemName {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.topItemSub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.moodRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.moodItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.moodIcon {
+  font-size: 16px;
+}
+
+.moodValue {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+}
+
+.moodLbl {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.moodDivider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.vibe {
+  text-align: center;
+  font-size: 13px;
+  color: var(--accent-green);
+  font-weight: 600;
+}
+
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.25);
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}

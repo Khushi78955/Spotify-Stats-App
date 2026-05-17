@@ -1,0 +1,44 @@
+.cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: default;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+  animation: popIn 0.4s ease forwards;
+}
+
+.tag:hover {
+  transform: scale(1.08);
+  opacity: 1 !important;
+}
+
+.count {
+  font-size: 10px;
+  opacity: 0.7;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1px 5px;
+  border-radius: 10px;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: inherit; transform: scale(1); }
+}

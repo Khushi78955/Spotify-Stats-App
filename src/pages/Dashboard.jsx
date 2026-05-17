@@ -1,0 +1,170 @@
+import { useState, useEffect } from 'react';
+import { getUserProfile, getTopTracks, getTopArtists, getRecentlyPlayed } from '../api/spotify';
+import { MOCK_USER, MOCK_TOP_TRACKS, MOCK_TOP_ARTISTS, MOCK_RECENTLY_PLAYED } from '../api/mockData';
+import Navbar from '../components/Navbar';
+import TrackCard from '../components/TrackCard';
+import ArtistCard from '../components/ArtistCard';
+import GenreCloud from '../components/GenreCloud';
+import ListeningHeatmap from '../components/ListeningHeatmap';
+import MoodScore from '../components/MoodScore';
+import PersonalityCard from '../components/PersonalityCard';
+import { SkeletonCard, SkeletonText } from '../components/LoadingSpinner';
+import { getTopGenres } from '../utils/genreUtils';
+import styles from './Dashboard.module.css';
+
+function StatCard({ label, value, icon, color }) {
+  return (
+    <div className={styles.statCard}>
+      <span className={styles.statIcon} style={{ color }}>{icon}</span>
+      <div className={styles.statValue}>{value}</div>
+      <div className={styles.statLabel}>{label}</div>
+    </div>
+  );
+}
+
+export default function Dashboard() {
+  const [user, setUser] = useState(null);
+  const [tracks, setTracks] = useState(null);
+  const [artists, setArtists] = useState(null);
+  const [recent, setRecent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const [u, t, a, r] = await Promise.all([
+          getUserProfile(),
+          getTopTracks('medium_term', 50),
+          getTopArtists('medium_term', 50),
+          getRecentlyPlayed(50),
+        ]);
+        if (!mounted) return;
+        setUser(u);
+        setTracks(t);
+        setArtists(a);
+        setRecent(r);
+      } catch (e) {
+        if (!mounted) return;
+        setUser(MOCK_USER);
+        setTracks(MOCK_TOP_TRACKS);
+        setArtists(MOCK_TOP_ARTISTS);
+        setRecent(MOCK_RECENTLY_PLAYED);
+        setError('Using demo data — connect Spotify for your real stats.');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
+    return () => { mounted = false; };
+  }, []);
+
+  const topGenres = artists ? getTopGenres(artists.items, 3) : [];
+  const topGenreLabel = topGenres[0]?.genre || '—';
+
+  return (
+    <>
+      <Navbar user={user} />
+      <div className={`page ${styles.page}`}>
+        <div className="container">
+          {error && (
+            <div className={styles.errorBanner}>{error}</div>
+          )}
+
+          <div className={styles.welcome}>
+            <h1 className={styles.welcomeTitle}>
+              Welcome back{user?.display_name ? `, ${user.display_name.split(' ')[0]}` : ''}
+            </h1>
+            <p className={styles.welcomeSub}>Here's your listening overview</p>
+          </div>
+
+          {loading ? (
+            <div className={styles.skeletonGrid}>
+              {[1, 2, 3, 4].map((i) => <SkeletonCard key={i} height={100} />)}
+            </div>
+          ) : (
+            <div className={`${styles.statsRow} grid-4`}>
+              <StatCard label="Top Genre" value={topGenreLabel} icon="🎭" color="var(--accent-purple)" />
+              <StatCard label="Artists Tracked" value={artists?.items?.length || 0} icon="🎤" color="var(--accent-green)" />
+              <StatCard label="Tracks Tracked" value={tracks?.items?.length || 0} icon="🎵" color="var(--accent-blue)" />
+              <StatCard label="Recent Plays" value={recent?.items?.length || 0} icon="🕐" color="var(--accent-orange)" />
+            </div>
+          )}
+
+          <div className={styles.mainGrid}>
+            {/* Top Tracks */}
+            <div className={`card ${styles.section}`}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Top Tracks</h2>
+                <a href="/tracks" className={styles.seeAll}>See all →</a>
+              </div>
+              {loading
+                ? [1,2,3,4,5].map((i) => <SkeletonCard key={i} height={52} />)
+                : tracks?.items?.slice(0, 5).map((t, i) => (
+                    <TrackCard key={t.id} track={t} rank={i + 1} compact />
+                  ))
+              }
+            </div>
+
+            {/* Top Artists */}
+            <div className={`card ${styles.section}`}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Top Artists</h2>
+                <a href="/artists" className={styles.seeAll}>See all →</a>
+              </div>
+              {loading
+                ? [1,2,3,4,5].map((i) => <SkeletonCard key={i} height={52} />)
+                : artists?.items?.slice(0, 5).map((a, i) => (
+                    <ArtistCard key={a.id} artist={a} rank={i + 1} compact />
+                  ))
+              }
+            </div>
+
+            {/* Genre Cloud */}
+            <div className={`card ${styles.section}`}>
+              <h2 className={styles.sectionTitle}>Genre Breakdown</h2>
+              {loading
+                ? <SkeletonCard height={120} />
+                : <GenreCloud artists={artists?.items || []} />
+              }
+            </div>
+
+            {/* Heatmap */}
+            <div className={`card ${styles.section}`}>
+              <h2 className={styles.sectionTitle}>Listening Patterns</h2>
+              {loading
+                ? <SkeletonCard height={180} />
+                : <ListeningHeatmap recentlyPlayed={recent} />
+              }
+            </div>
+
+            {/* Mood */}
+            <div className={`card ${styles.section}`}>
+              <h2 className={styles.sectionTitle}>Mood Analysis</h2>
+              {loading
+                ? <SkeletonCard height={180} />
+                : <MoodScore artists={artists?.items || []} />
+              }
+            </div>
+
+            {/* Personality Card */}
+            <div className={`card ${styles.section} ${styles.personality}`}>
+              <h2 className={styles.sectionTitle}>Your Music Personality</h2>
+              {loading
+                ? <SkeletonCard height={300} />
+                : (
+                  <PersonalityCard
+                    user={user}
+                    topTracks={tracks?.items || []}
+                    topArtists={artists?.items || []}
+                  />
+                )
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
