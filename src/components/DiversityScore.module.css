@@ -1,0 +1,98 @@
+.wrapper { display: flex; flex-direction: column; gap: 18px; }
+
+.scoreRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.scoreBig {
+  font-family: 'Syne', sans-serif;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.scoreRight { display: flex; flex-direction: column; gap: 4px; }
+
+.scoreLabel {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.scoreDesc { font-size: 13px; color: var(--text-secondary); }
+.scoreDesc strong { color: var(--text-primary); }
+
+.bars { display: flex; flex-direction: column; gap: 10px; }
+
+.gaugeRow { display: flex; align-items: center; gap: 10px; }
+
+.gaugeLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  width: 88px;
+  flex-shrink: 0;
+}
+
+.gaugeTrack {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.gaugeFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+.gaugeValue {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  width: 26px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.rarities { display: flex; flex-direction: column; gap: 8px; }
+
+.raritiesTitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.rarityRow { display: flex; align-items: center; gap: 10px; }
+
+.rarityImg {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.rarityFallback {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--gradient-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.rarityInfo { display: flex; flex-direction: column; gap: 1px; }
+
+.rarityName { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.rarityPop  { font-size: 11px; color: var(--text-muted); }

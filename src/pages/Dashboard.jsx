@@ -7,8 +7,9 @@ import ArtistCard from '../components/ArtistCard';
 import GenreCloud from '../components/GenreCloud';
 import ListeningHeatmap from '../components/ListeningHeatmap';
 import MoodScore from '../components/MoodScore';
+import DiversityScore from '../components/DiversityScore';
 import PersonalityCard from '../components/PersonalityCard';
-import { SkeletonCard, SkeletonText } from '../components/LoadingSpinner';
+import { SkeletonCard } from '../components/LoadingSpinner';
 import { getTopGenres } from '../utils/genreUtils';
 import styles from './Dashboard.module.css';
 
@@ -145,7 +146,16 @@ export default function Dashboard() {
               {loading
                 ? <SkeletonCard height={180} />
                 : <MoodScore artists={artists?.items || []} />
-.              }
+              }
+            </div>
+
+            {/* Diversity / Obscurity Score */}
+            <div className={`card ${styles.section}`}>
+              <h2 className={styles.sectionTitle}>Listening Diversity</h2>
+              {loading
+                ? <SkeletonCard height={180} />
+                : <DiversityScore artists={artists?.items || []} />
+              }
             </div>
 
             {/* Personality Card */}
