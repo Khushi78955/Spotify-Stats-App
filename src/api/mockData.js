@@ -36,9 +36,17 @@ export const MOCK_TOP_ARTISTS = {
   ],
 };
 
+// 200 entries spread across 30 days with a realistic evening peak (18-23h)
 export const MOCK_RECENTLY_PLAYED = {
-  items: Array.from({ length: 50 }, (_, i) => ({
-    track: { id: `r${i}`, name: `Track ${i}` },
-    played_at: new Date(Date.now() - i * 3600000 * Math.random() * 6).toISOString(),
-  })),
+  items: Array.from({ length: 200 }, (_, i) => {
+    const dayOffset = Math.floor(i / 7) * 24 * 3600000;
+    const hour = Math.random() < 0.6
+      ? 18 + Math.floor(Math.random() * 5)
+      : Math.floor(Math.random() * 24);
+    const ms = dayOffset + hour * 3600000 + Math.random() * 3600000;
+    return {
+      track: { id: `r${i}`, name: `Track ${i}` },
+      played_at: new Date(Date.now() - ms).toISOString(),
+    };
+  }),
 };

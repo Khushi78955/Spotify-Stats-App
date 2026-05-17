@@ -50,3 +50,23 @@ export async function getTopArtists(timeRange = 'medium_term', limit = 50) {
 export async function getRecentlyPlayed(limit = 50) {
   return request('/me/player/recently-played', { limit });
 }
+
+// Paginates recently-played using cursor to collect up to maxItems tracks.
+export async function getRecentlyPlayedBatch(maxItems = 200) {
+  const items = [];
+  let before = null;
+
+  while (items.length < maxItems) {
+    const params = { limit: 50 };
+    if (before) params.before = before;
+
+    const data = await request('/me/player/recently-played', params);
+    items.push(...(data.items || []));
+
+    const nextCursor = data.cursors?.before;
+    if (!nextCursor || (data.items?.length ?? 0) < 50) break;
+    before = nextCursor;
+  }
+
+  return { items: items.slice(0, maxItems) };
+}

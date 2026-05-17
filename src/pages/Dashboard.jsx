@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getUserProfile, getTopTracks, getTopArtists, getRecentlyPlayed } from '../api/spotify';
+import { getUserProfile, getTopTracks, getTopArtists, getRecentlyPlayedBatch } from '../api/spotify';
 import { MOCK_USER, MOCK_TOP_TRACKS, MOCK_TOP_ARTISTS, MOCK_RECENTLY_PLAYED } from '../api/mockData';
 import Navbar from '../components/Navbar';
 import TrackCard from '../components/TrackCard';
@@ -38,7 +38,7 @@ export default function Dashboard() {
           getUserProfile(),
           getTopTracks('medium_term', 50),
           getTopArtists('medium_term', 50),
-          getRecentlyPlayed(50),
+          getRecentlyPlayedBatch(200),
         ]);
         if (!mounted) return;
         setUser(u);
@@ -145,7 +145,7 @@ export default function Dashboard() {
               {loading
                 ? <SkeletonCard height={180} />
                 : <MoodScore artists={artists?.items || []} />
-              }
+.              }
             </div>
 
             {/* Personality Card */}

@@ -57,6 +57,33 @@ export function getVibeLabel(scores) {
   return 'Introspective';
 }
 
+// Diversity score: mix of artist obscurity (inverse popularity) + genre breadth.
+export function calculateDiversityScore(artists) {
+  if (!artists?.length) {
+    return { score: 50, obscurityScore: 50, genreScore: 50, avgPopularity: 50, label: 'Unknown', rarities: [] };
+  }
+
+  const avgPopularity = artists.reduce((s, a) => s + (a.popularity ?? 50), 0) / artists.length;
+  const obscurityScore = Math.round(100 - avgPopularity);
+
+  const families = new Set(artists.flatMap((a) => (a.genres ?? []).map(categorizeGenre)));
+  const genreScore = Math.min(100, Math.round((families.size / 10) * 100));
+
+  const score = Math.round(obscurityScore * 0.65 + genreScore * 0.35);
+
+  const label =
+    score >= 75 ? 'Highly Eclectic' :
+    score >= 55 ? 'Adventurous' :
+    score >= 35 ? 'Balanced' :
+    score >= 15 ? 'Mainstream' : 'Chart Devotee';
+
+  const rarities = [...artists]
+    .sort((a, b) => (a.popularity ?? 100) - (b.popularity ?? 100))
+    .slice(0, 3);
+
+  return { score, obscurityScore, genreScore, avgPopularity: Math.round(avgPopularity), label, rarities };
+}
+
 export function getVibeColor(label) {
   const map = {
     'Party Animal': '#f97316',

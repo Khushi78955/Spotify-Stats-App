@@ -2,74 +2,86 @@ import { useMemo } from 'react';
 import styles from './ListeningHeatmap.module.css';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const HOUR_LABELS = ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9pm'];
+const AXIS_HOURS = [0, 4, 8, 12, 16, 20];
+
+function hourLabel(h) {
+  if (h === 0) return '12am';
+  if (h === 12) return '12pm';
+  return h < 12 ? `${h}am` : `${h - 12}pm`;
+}
 
 export default function ListeningHeatmap({ recentlyPlayed }) {
-  const { grid, maxCount, peakLabel } = useMemo(() => {
-    const g = Array.from({ length: 8 }, () => Array(7).fill(0));
+  const { grid, maxCount, peakLabel, totalTracks } = useMemo(() => {
+    const g = Array.from({ length: 24 }, () => Array(7).fill(0));
+    const items = recentlyPlayed?.items ?? [];
 
-    if (!recentlyPlayed?.items?.length) {
-      return { grid: g, maxCount: 0, peakLabel: 'No data yet' };
-    }
+    if (!items.length) return { grid: g, maxCount: 0, peakLabel: 'No data yet', totalTracks: 0 };
 
-    for (const item of recentlyPlayed.items) {
+    for (const item of items) {
       const d = new Date(item.played_at);
-      const hour = d.getHours();
-      const day = d.getDay();
-      const slot = Math.floor(hour / 3);
-      g[slot][day]++;
+      g[d.getHours()][d.getDay()]++;
     }
 
-    let maxCount = 0;
-    let peakSlot = 0, peakDay = 0;
-    for (let s = 0; s < 8; s++) {
+    let maxCount = 0, peakH = 0, peakD = 0;
+    for (let h = 0; h < 24; h++) {
       for (let d = 0; d < 7; d++) {
-        if (g[s][d] > maxCount) {
-          maxCount = g[s][d];
-          peakSlot = s;
-          peakDay = d;
-        }
+        if (g[h][d] > maxCount) { maxCount = g[h][d]; peakH = h; peakD = d; }
       }
     }
 
-    const hourName = ['midnight', 'early morning', 'morning', 'late morning', 'noon', 'afternoon', 'evening', 'night'][peakSlot];
     const peakLabel = maxCount > 0
-      ? `You listen most on ${DAYS[peakDay]} ${hourName}s`
+      ? `Peak: ${DAYS[peakD]}s around ${hourLabel(peakH)} — ${items.length} plays sampled`
       : 'No data yet';
 
-    return { grid: g, maxCount, peakLabel };
+    return { grid: g, maxCount, peakLabel, totalTracks: items.length };
   }, [recentlyPlayed]);
 
   function cellColor(count) {
-    if (count === 0 || maxCount === 0) return 'rgba(255,255,255,0.04)';
-    const intensity = count / maxCount;
-    const alpha = 0.15 + intensity * 0.85;
-    if (intensity > 0.75) return `rgba(29,185,84,${alpha})`;
-    if (intensity > 0.4) return `rgba(29,185,84,${alpha * 0.7})`;
-    return `rgba(29,185,84,${alpha * 0.4})`;
+    if (!count || !maxCount) return 'rgba(255,255,255,0.04)';
+    const t = count / maxCount;
+    if (t >= 0.75) return `rgba(29,185,84,${0.8 + t * 0.2})`;
+    if (t >= 0.4)  return `rgba(29,185,84,${0.4 + t * 0.4})`;
+    if (t >= 0.1)  return `rgba(29,185,84,${0.15 + t * 0.3})`;
+    return 'rgba(29,185,84,0.1)';
   }
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.grid}>
-        <div className={styles.corner} />
-        {DAYS.map((d) => (
-          <div key={d} className={styles.dayLabel}>{d}</div>
-        ))}
-        {HOUR_LABELS.map((label, s) => (
-          <>
-            <div key={label} className={styles.hourLabel}>{label}</div>
-            {DAYS.map((d, dayIdx) => (
-              <div
-                key={`${s}-${dayIdx}`}
-                className={styles.cell}
-                style={{ background: cellColor(grid[s][dayIdx]) }}
-                title={`${d} ${label}: ${grid[s][dayIdx]} tracks`}
-              />
-            ))}
-          </>
-        ))}
+      <div className={styles.topRow}>
+        <span className={styles.sample}>{totalTracks} plays sampled</span>
+        <div className={styles.legend}>
+          <span className={styles.legendTxt}>Less</span>
+          {[0.04, 0.18, 0.42, 0.7, 1].map((v, i) => (
+            <div key={i} className={styles.legendDot}
+              style={{ background: v < 0.08 ? 'rgba(255,255,255,0.04)' : `rgba(29,185,84,${v})` }} />
+          ))}
+          <span className={styles.legendTxt}>More</span>
+        </div>
       </div>
+
+      <div className={styles.scroll}>
+        <div className={styles.grid}>
+          <div className={styles.corner} />
+          {DAYS.map((d) => <div key={d} className={styles.dayLabel}>{d}</div>)}
+
+          {Array.from({ length: 24 }, (_, h) => (
+            <>
+              <div key={`h${h}`} className={styles.hourLabel}>
+                {AXIS_HOURS.includes(h) ? hourLabel(h) : ''}
+              </div>
+              {DAYS.map((_, di) => (
+                <div
+                  key={`${h}-${di}`}
+                  className={styles.cell}
+                  style={{ background: cellColor(grid[h][di]) }}
+                  title={`${DAYS[di]} ${hourLabel(h)}: ${grid[h][di]} tracks`}
+                />
+              ))}
+            </>
+          ))}
+        </div>
+      </div>
+
       <p className={styles.peak}>{peakLabel}</p>
     </div>
   );

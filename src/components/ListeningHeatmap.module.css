@@ -1,52 +1,66 @@
-.wrapper {
-  overflow-x: auto;
+.wrapper { display: flex; flex-direction: column; gap: 10px; }
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
 }
+
+.sample { font-size: 12px; color: var(--text-muted); }
+
+.legend { display: flex; align-items: center; gap: 4px; }
+.legendTxt { font-size: 11px; color: var(--text-muted); }
+.legendDot { width: 11px; height: 11px; border-radius: 2px; }
+
+.scroll { overflow-x: auto; }
 
 .grid {
   display: grid;
-  grid-template-columns: 52px repeat(7, 1fr);
-  gap: 4px;
-  min-width: 380px;
+  grid-template-columns: 34px repeat(7, 1fr);
+  gap: 3px;
+  min-width: 320px;
 }
 
-.corner {
-  /* empty top-left corner */
-}
+.corner { /* top-left spacer */ }
 
 .dayLabel {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   text-align: center;
-  padding-bottom: 4px;
   font-weight: 500;
+  padding-bottom: 2px;
 }
 
 .hourLabel {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   text-align: right;
-  padding-right: 8px;
+  padding-right: 5px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  height: 14px;
 }
 
 .cell {
-  height: 28px;
-  border-radius: 4px;
-  transition: transform 0.15s ease;
+  height: 14px;
+  border-radius: 2px;
+  transition: transform 0.1s ease, filter 0.1s ease;
   cursor: default;
 }
 
 .cell:hover {
-  transform: scale(1.15);
+  transform: scale(1.35);
+  filter: brightness(1.4);
   z-index: 1;
 }
 
 .peak {
-  margin-top: 16px;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--accent-green);
   font-weight: 500;
   text-align: center;
+  margin: 0;
 }
