@@ -5,10 +5,11 @@ import Navbar from '../components/Navbar';
 import TrackCard from '../components/TrackCard';
 import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
+import { useTimeRange } from '../hooks/useTimeRange';
 import styles from './TopItems.module.css';
 
 export default function TopTracks() {
-  const [timeRange, setTimeRange] = useState('medium_term');
+  const [timeRange, setTimeRange] = useTimeRange();
   const [tracks, setTracks] = useState(null);
   const [loading, setLoading] = useState(true);
 

@@ -5,10 +5,11 @@ import Navbar from '../components/Navbar';
 import ArtistCard from '../components/ArtistCard';
 import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
+import { useTimeRange } from '../hooks/useTimeRange';
 import styles from './TopItems.module.css';
 
 export default function TopArtists() {
-  const [timeRange, setTimeRange] = useState('medium_term');
+  const [timeRange, setTimeRange] = useTimeRange();
   const [artists, setArtists] = useState(null);
   const [loading, setLoading] = useState(true);
 
