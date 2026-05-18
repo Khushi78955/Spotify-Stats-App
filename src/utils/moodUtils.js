@@ -11,6 +11,7 @@ const MOOD_WEIGHTS = {
   rnb:        { energy: 0.60, happiness: 0.70, danceability: 0.80 },
   country:    { energy: 0.55, happiness: 0.65, danceability: 0.55 },
   latin:      { energy: 0.80, happiness: 0.75, danceability: 0.88 },
+  chill:      { energy: 0.25, happiness: 0.60, danceability: 0.30 },
   other:      { energy: 0.55, happiness: 0.55, danceability: 0.55 },
 };
 

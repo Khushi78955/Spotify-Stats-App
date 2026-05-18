@@ -1,14 +1,16 @@
 const GENRE_FAMILIES = {
-  electronic: ['electronic', 'edm', 'house', 'techno', 'dance', 'electro', 'synth', 'ambient', 'trance', 'drum and bass', 'dubstep'],
-  hiphop: ['hip-hop', 'hip hop', 'rap', 'trap', 'grime', 'drill', 'boom bap', 'conscious hip hop'],
-  rock: ['rock', 'metal', 'punk', 'grunge', 'alternative', 'indie rock', 'hard rock', 'classic rock'],
-  pop: ['pop', 'dance pop', 'electropop', 'synth-pop', 'teen pop', 'k-pop', 'bedroom pop'],
-  rnb: ['r&b', 'soul', 'funk', 'neo soul', 'contemporary r&b'],
-  indie: ['indie', 'indie pop', 'indie folk', 'lo-fi', 'shoegaze'],
-  classical: ['classical', 'orchestral', 'opera', 'chamber', 'baroque'],
-  jazz: ['jazz', 'bebop', 'smooth jazz', 'fusion', 'swing'],
-  country: ['country', 'country pop', 'bluegrass', 'americana', 'folk'],
-  latin: ['latin', 'reggaeton', 'salsa', 'bachata', 'latin pop'],
+  electronic: ['electronic', 'edm', 'house', 'techno', 'dance', 'electro', 'synth', 'trance', 'drum and bass', 'dubstep'],
+  hiphop:     ['hip-hop', 'hip hop', 'rap', 'trap', 'grime', 'drill', 'boom bap', 'conscious hip hop'],
+  rock:       ['rock', 'metal', 'punk', 'grunge', 'alternative', 'indie rock', 'hard rock', 'classic rock'],
+  pop:        ['pop', 'dance pop', 'electropop', 'synth-pop', 'teen pop', 'k-pop', 'bedroom pop'],
+  rnb:        ['r&b', 'soul', 'funk', 'neo soul', 'contemporary r&b'],
+  indie:      ['indie', 'indie pop', 'indie folk', 'shoegaze'],
+  classical:  ['classical', 'orchestral', 'opera', 'chamber', 'baroque'],
+  jazz:       ['jazz', 'bebop', 'smooth jazz', 'fusion', 'swing'],
+  country:    ['country', 'country pop', 'bluegrass', 'americana', 'folk'],
+  latin:      ['latin', 'reggaeton', 'salsa', 'bachata', 'latin pop'],
+  // chill is its own family so moodUtils personality types map correctly
+  chill:      ['chill', 'lo-fi', 'lo fi', 'ambient', 'chillhop', 'chillwave', 'downtempo', 'new age', 'meditation', 'sleep'],
 };
 
 export function categorizeGenre(genre) {
@@ -22,16 +24,17 @@ export function categorizeGenre(genre) {
 export function getGenreColor(category) {
   const colors = {
     electronic: '#3b82f6',
-    hiphop: '#f59e0b',
-    rock: '#ef4444',
-    pop: '#1db954',
-    rnb: '#8b5cf6',
-    indie: '#06b6d4',
-    classical: '#d97706',
-    jazz: '#ec4899',
-    country: '#84cc16',
-    latin: '#f97316',
-    other: '#6b7280',
+    hiphop:     '#f59e0b',
+    rock:       '#ef4444',
+    pop:        '#1db954',
+    rnb:        '#8b5cf6',
+    indie:      '#06b6d4',
+    classical:  '#d97706',
+    jazz:       '#ec4899',
+    country:    '#84cc16',
+    latin:      '#f97316',
+    chill:      '#67e8f9',
+    other:      '#6b7280',
   };
   return colors[category] || colors.other;
 }
