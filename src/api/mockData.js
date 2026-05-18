@@ -36,17 +36,60 @@ export const MOCK_TOP_ARTISTS = {
   ],
 };
 
-// 200 entries spread across 30 days with a realistic evening peak (18-23h)
+// Fixed distribution — deterministic so the demo heatmap looks intentional.
+// Pattern: heavy evening listening (20-22h), morning commute (8-9h),
+// light afternoons, nearly silent 2-6am. Weekends skew earlier.
+// Each entry is [dayOfWeek 0-6, hourOfDay 0-23, weeksAgo 0-3].
+const FIXED_PLAYS = [
+  // Sunday — relaxed afternoon + evening
+  [0,14,0],[0,15,0],[0,16,0],[0,20,0],[0,21,0],[0,21,0],[0,22,0],
+  [0,14,1],[0,16,1],[0,20,1],[0,21,1],[0,22,1],
+  [0,15,2],[0,16,2],[0,20,2],[0,21,2],[0,22,2],[0,23,2],
+  [0,13,3],[0,15,3],[0,20,3],[0,21,3],
+  // Monday — commute + heavy evening
+  [1,8,0],[1,9,0],[1,12,0],[1,20,0],[1,20,0],[1,21,0],[1,21,0],[1,22,0],
+  [1,8,1],[1,9,1],[1,20,1],[1,21,1],[1,22,1],
+  [1,8,2],[1,12,2],[1,20,2],[1,21,2],[1,22,2],
+  [1,8,3],[1,9,3],[1,20,3],[1,21,3],[1,22,3],
+  // Tuesday
+  [2,8,0],[2,9,0],[2,13,0],[2,20,0],[2,21,0],[2,22,0],[2,23,0],
+  [2,8,1],[2,20,1],[2,21,1],[2,22,1],
+  [2,8,2],[2,9,2],[2,20,2],[2,21,2],[2,22,2],
+  [2,8,3],[2,20,3],[2,21,3],
+  // Wednesday
+  [3,8,0],[3,12,0],[3,20,0],[3,21,0],[3,22,0],
+  [3,8,1],[3,9,1],[3,20,1],[3,21,1],[3,22,1],[3,23,1],
+  [3,8,2],[3,20,2],[3,21,2],
+  [3,8,3],[3,12,3],[3,20,3],[3,21,3],[3,22,3],
+  // Thursday
+  [4,8,0],[4,9,0],[4,20,0],[4,21,0],[4,21,0],[4,22,0],[4,22,0],[4,23,0],
+  [4,8,1],[4,20,1],[4,21,1],[4,22,1],
+  [4,8,2],[4,9,2],[4,13,2],[4,20,2],[4,21,2],[4,22,2],
+  [4,8,3],[4,20,3],[4,21,3],
+  // Friday — biggest evening, stays up late
+  [5,8,0],[5,9,0],[5,17,0],[5,19,0],[5,20,0],[5,21,0],[5,21,0],[5,22,0],[5,22,0],[5,23,0],[5,23,0],
+  [5,8,1],[5,18,1],[5,20,1],[5,21,1],[5,22,1],[5,23,1],
+  [5,8,2],[5,17,2],[5,20,2],[5,21,2],[5,22,2],[5,23,2],
+  [5,8,3],[5,20,3],[5,21,3],[5,22,3],[5,23,3],
+  // Saturday — afternoon and late evening
+  [6,12,0],[6,13,0],[6,15,0],[6,19,0],[6,20,0],[6,21,0],[6,22,0],[6,23,0],
+  [6,13,1],[6,15,1],[6,20,1],[6,21,1],[6,22,1],[6,23,1],
+  [6,12,2],[6,14,2],[6,20,2],[6,21,2],[6,22,2],[6,23,2],
+  [6,13,3],[6,15,3],[6,20,3],[6,21,3],[6,22,3],
+];
+
 export const MOCK_RECENTLY_PLAYED = {
-  items: Array.from({ length: 200 }, (_, i) => {
-    const dayOffset = Math.floor(i / 7) * 24 * 3600000;
-    const hour = Math.random() < 0.6
-      ? 18 + Math.floor(Math.random() * 5)
-      : Math.floor(Math.random() * 24);
-    const ms = dayOffset + hour * 3600000 + Math.random() * 3600000;
+  items: FIXED_PLAYS.map(([day, hour, weeksAgo], i) => {
+    // Anchor each entry to the most recent occurrence of that day/hour
+    const now = new Date();
+    const currentDay = now.getDay();
+    const daysBack = ((currentDay - day + 7) % 7) + weeksAgo * 7;
+    const ts = new Date(now);
+    ts.setDate(ts.getDate() - daysBack);
+    ts.setHours(hour, (i * 7) % 60, 0, 0);
     return {
       track: { id: `r${i}`, name: `Track ${i}` },
-      played_at: new Date(Date.now() - ms).toISOString(),
+      played_at: ts.toISOString(),
     };
   }),
 };
