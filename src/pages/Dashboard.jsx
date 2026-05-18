@@ -11,6 +11,7 @@ import MoodScore from '../components/MoodScore';
 import DiversityScore from '../components/DiversityScore';
 import PersonalityCard from '../components/PersonalityCard';
 import { SkeletonCard } from '../components/LoadingSpinner';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { getTopGenres } from '../utils/genreUtils';
 import styles from './Dashboard.module.css';
 
@@ -104,92 +105,108 @@ export default function Dashboard() {
 
           <div className={styles.mainGrid}>
             {/* Top Tracks */}
-            <div className={`card ${styles.section}`}>
-              <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Top Tracks</h2>
-                <a href="/tracks" className={styles.seeAll}>See all →</a>
+            <ErrorBoundary label="Top Tracks">
+              <div className={`card ${styles.section}`}>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Top Tracks</h2>
+                  <a href="/tracks" className={styles.seeAll}>See all →</a>
+                </div>
+                {loading
+                  ? [1,2,3,4,5].map((i) => <SkeletonCard key={i} height={52} />)
+                  : tracks?.items?.slice(0, 5).map((t, i) => (
+                      <TrackCard key={t.id} track={t} rank={i + 1} compact />
+                    ))
+                }
               </div>
-              {loading
-                ? [1,2,3,4,5].map((i) => <SkeletonCard key={i} height={52} />)
-                : tracks?.items?.slice(0, 5).map((t, i) => (
-                    <TrackCard key={t.id} track={t} rank={i + 1} compact />
-                  ))
-              }
-            </div>
+            </ErrorBoundary>
 
             {/* Top Artists */}
-            <div className={`card ${styles.section}`}>
-              <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Top Artists</h2>
-                <a href="/artists" className={styles.seeAll}>See all →</a>
+            <ErrorBoundary label="Top Artists">
+              <div className={`card ${styles.section}`}>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Top Artists</h2>
+                  <a href="/artists" className={styles.seeAll}>See all →</a>
+                </div>
+                {loading
+                  ? [1,2,3,4,5].map((i) => <SkeletonCard key={i} height={52} />)
+                  : artists?.items?.slice(0, 5).map((a, i) => (
+                      <ArtistCard key={a.id} artist={a} rank={i + 1} compact />
+                    ))
+                }
               </div>
-              {loading
-                ? [1,2,3,4,5].map((i) => <SkeletonCard key={i} height={52} />)
-                : artists?.items?.slice(0, 5).map((a, i) => (
-                    <ArtistCard key={a.id} artist={a} rank={i + 1} compact />
-                  ))
-              }
-            </div>
+            </ErrorBoundary>
 
             {/* Genre Chart */}
-            <div className={`card ${styles.section}`}>
-              <h2 className={styles.sectionTitle}>Genre Breakdown</h2>
-              {loading
-                ? <SkeletonCard height={220} />
-                : <GenreChart artists={artists?.items || []} />
-              }
-            </div>
+            <ErrorBoundary label="Genre Breakdown">
+              <div className={`card ${styles.section}`}>
+                <h2 className={styles.sectionTitle}>Genre Breakdown</h2>
+                {loading
+                  ? <SkeletonCard height={220} />
+                  : <GenreChart artists={artists?.items || []} />
+                }
+              </div>
+            </ErrorBoundary>
 
             {/* Genre Cloud */}
-            <div className={`card ${styles.section}`}>
-              <h2 className={styles.sectionTitle}>Genre Cloud</h2>
-              {loading
-                ? <SkeletonCard height={120} />
-                : <GenreCloud artists={artists?.items || []} />
-              }
-            </div>
+            <ErrorBoundary label="Genre Cloud">
+              <div className={`card ${styles.section}`}>
+                <h2 className={styles.sectionTitle}>Genre Cloud</h2>
+                {loading
+                  ? <SkeletonCard height={120} />
+                  : <GenreCloud artists={artists?.items || []} />
+                }
+              </div>
+            </ErrorBoundary>
 
             {/* Heatmap */}
-            <div className={`card ${styles.section}`}>
-              <h2 className={styles.sectionTitle}>Listening Patterns</h2>
-              {loading
-                ? <SkeletonCard height={180} />
-                : <ListeningHeatmap recentlyPlayed={recent} />
-              }
-            </div>
+            <ErrorBoundary label="Listening Patterns">
+              <div className={`card ${styles.section}`}>
+                <h2 className={styles.sectionTitle}>Listening Patterns</h2>
+                {loading
+                  ? <SkeletonCard height={180} />
+                  : <ListeningHeatmap recentlyPlayed={recent} />
+                }
+              </div>
+            </ErrorBoundary>
 
             {/* Mood */}
-            <div className={`card ${styles.section}`}>
-              <h2 className={styles.sectionTitle}>Mood Analysis</h2>
-              {loading
-                ? <SkeletonCard height={180} />
-                : <MoodScore artists={artists?.items || []} />
-              }
-            </div>
+            <ErrorBoundary label="Mood Analysis">
+              <div className={`card ${styles.section}`}>
+                <h2 className={styles.sectionTitle}>Mood Analysis</h2>
+                {loading
+                  ? <SkeletonCard height={180} />
+                  : <MoodScore artists={artists?.items || []} />
+                }
+              </div>
+            </ErrorBoundary>
 
-            {/* Diversity / Obscurity Score */}
-            <div className={`card ${styles.section}`}>
-              <h2 className={styles.sectionTitle}>Listening Diversity</h2>
-              {loading
-                ? <SkeletonCard height={180} />
-                : <DiversityScore artists={artists?.items || []} />
-              }
-            </div>
+            {/* Diversity Score */}
+            <ErrorBoundary label="Listening Diversity">
+              <div className={`card ${styles.section}`}>
+                <h2 className={styles.sectionTitle}>Listening Diversity</h2>
+                {loading
+                  ? <SkeletonCard height={180} />
+                  : <DiversityScore artists={artists?.items || []} />
+                }
+              </div>
+            </ErrorBoundary>
 
             {/* Personality Card */}
-            <div className={`card ${styles.section} ${styles.personality}`}>
-              <h2 className={styles.sectionTitle}>Your Music Personality</h2>
-              {loading
-                ? <SkeletonCard height={300} />
-                : (
-                  <PersonalityCard
-                    user={user}
-                    topTracks={tracks?.items || []}
-                    topArtists={artists?.items || []}
-                  />
-                )
-              }
-            </div>
+            <ErrorBoundary label="Music Personality">
+              <div className={`card ${styles.section} ${styles.personality}`}>
+                <h2 className={styles.sectionTitle}>Your Music Personality</h2>
+                {loading
+                  ? <SkeletonCard height={300} />
+                  : (
+                    <PersonalityCard
+                      user={user}
+                      topTracks={tracks?.items || []}
+                      topArtists={artists?.items || []}
+                    />
+                  )
+                }
+              </div>
+            </ErrorBoundary>
           </div>
         </div>
       </div>
