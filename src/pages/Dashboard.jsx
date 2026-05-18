@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import TrackCard from '../components/TrackCard';
 import ArtistCard from '../components/ArtistCard';
 import GenreCloud from '../components/GenreCloud';
+import GenreChart from '../components/GenreChart';
 import ListeningHeatmap from '../components/ListeningHeatmap';
 import MoodScore from '../components/MoodScore';
 import DiversityScore from '../components/DiversityScore';
@@ -70,7 +71,15 @@ export default function Dashboard() {
       <div className={`page ${styles.page}`}>
         <div className="container">
           {error && (
-            <div className={styles.errorBanner}>{error}</div>
+            <div className={styles.demoBanner}>
+              <span className={styles.demoBadge}>
+                <span className={styles.demoBadgeDot} />
+                DEMO MODE
+              </span>
+              <span className={styles.demoText}>
+                Showing sample data — add your Spotify Client ID to see real stats
+              </span>
+            </div>
           )}
 
           <div className={styles.welcome}>
@@ -122,9 +131,18 @@ export default function Dashboard() {
               }
             </div>
 
-            {/* Genre Cloud */}
+            {/* Genre Chart */}
             <div className={`card ${styles.section}`}>
               <h2 className={styles.sectionTitle}>Genre Breakdown</h2>
+              {loading
+                ? <SkeletonCard height={220} />
+                : <GenreChart artists={artists?.items || []} />
+              }
+            </div>
+
+            {/* Genre Cloud */}
+            <div className={`card ${styles.section}`}>
+              <h2 className={styles.sectionTitle}>Genre Cloud</h2>
               {loading
                 ? <SkeletonCard height={120} />
                 : <GenreCloud artists={artists?.items || []} />
