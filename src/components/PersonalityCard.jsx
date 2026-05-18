@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, Fragment } from 'react';
 import { downloadPersonalityCard } from '../utils/exportUtils';
 import { getTopGenres } from '../utils/genreUtils';
 import { calculateMoodScores, getVibeLabel, calculateDiversityScore } from '../utils/moodUtils';
@@ -164,14 +164,14 @@ export default function PersonalityCard({ user, topTracks, topArtists }) {
             { icon: '😊', val: Math.round(scores.happiness * 100),     lbl: 'Happy' },
             { icon: '🕺', val: Math.round(scores.danceability * 100),  lbl: 'Dance' },
           ].map((m, i, arr) => (
-            <>
-              <div key={m.lbl} className={styles.moodItem}>
+            <Fragment key={m.lbl}>
+              <div className={styles.moodItem}>
                 <span className={styles.moodIcon}>{m.icon}</span>
                 <span className={styles.moodValue}>{m.val}</span>
                 <span className={styles.moodLbl}>{m.lbl}</span>
               </div>
-              {i < arr.length - 1 && <div key={`d${i}`} className={styles.moodDivider} />}
-            </>
+              {i < arr.length - 1 && <div className={styles.moodDivider} />}
+            </Fragment>
           ))}
         </div>
 
