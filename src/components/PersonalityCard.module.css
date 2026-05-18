@@ -5,6 +5,13 @@
   gap: 20px;
 }
 
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .card {
   width: 100%;
   max-width: 380px;

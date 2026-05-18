@@ -1,5 +1,5 @@
 import { useRef, useMemo, Fragment } from 'react';
-import { downloadPersonalityCard } from '../utils/exportUtils';
+import { downloadPersonalityCard, sharePersonalityCard, canShare } from '../utils/exportUtils';
 import { getTopGenres } from '../utils/genreUtils';
 import { calculateMoodScores, getVibeLabel, calculateDiversityScore } from '../utils/moodUtils';
 import styles from './PersonalityCard.module.css';
@@ -180,9 +180,16 @@ export default function PersonalityCard({ user, topTracks, topArtists }) {
         <div className={styles.footer}>Statify • Your Music DNA</div>
       </div>
 
-      <button className="btn-primary" onClick={() => downloadPersonalityCard(cardRef)}>
-        ↓ Download Card
-      </button>
+      <div className={styles.actions}>
+        <button className="btn-primary" onClick={() => downloadPersonalityCard(cardRef)}>
+          ↓ Download Card
+        </button>
+        {canShare() && (
+          <button className="btn-secondary" onClick={() => sharePersonalityCard(cardRef)}>
+            ↑ Share
+          </button>
+        )}
+      </div>
     </div>
   );
 }
