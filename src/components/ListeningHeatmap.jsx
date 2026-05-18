@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, Fragment } from 'react';
 import styles from './ListeningHeatmap.module.css';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -65,8 +65,8 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
           {DAYS.map((d) => <div key={d} className={styles.dayLabel}>{d}</div>)}
 
           {Array.from({ length: 24 }, (_, h) => (
-            <>
-              <div key={`h${h}`} className={styles.hourLabel}>
+            <Fragment key={h}>
+              <div className={styles.hourLabel}>
                 {AXIS_HOURS.includes(h) ? hourLabel(h) : ''}
               </div>
               {DAYS.map((_, di) => (
@@ -77,7 +77,7 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
                   title={`${DAYS[di]} ${hourLabel(h)}: ${grid[h][di]} tracks`}
                 />
               ))}
-            </>
+            </Fragment>
           ))}
         </div>
       </div>
