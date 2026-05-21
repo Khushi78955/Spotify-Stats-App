@@ -5,6 +5,10 @@ export default function AudioSphere() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    // Skip on mobile (battery + perf) and for users who prefer reduced motion
+    if (window.innerWidth < 768) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -54,11 +58,11 @@ export default function AudioSphere() {
     };
     window.addEventListener('mousemove', onMouseMove);
 
-    const clock = new THREE.Clock();
+    const startTime = performance.now();
     let raf;
     const animate = () => {
       raf = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
+      const t = (performance.now() - startTime) / 1000;
       mesh.rotation.x += 0.002;
       mesh.rotation.y += 0.003;
       mesh.scale.setScalar(1 + Math.sin(t * 0.8) * 0.015);

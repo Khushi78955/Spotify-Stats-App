@@ -21,6 +21,7 @@ export default function App() {
 
   return (
     <>
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <CustomCursor />
       <Routes>
         <Route path="/" element={<PageTransition><Landing /></PageTransition>} />

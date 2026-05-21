@@ -96,10 +96,11 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
                       const rect = e.currentTarget.getBoundingClientRect();
                       const wrap = e.currentTarget.closest('.' + styles.scroll);
                       const wRect = wrap?.getBoundingClientRect() || rect;
+                      const rawX = rect.left - wRect.left + rect.width / 2;
                       setTooltip({
                         label: `${DAYS[di]} ${hourLabel(h)}: ${count} play${count !== 1 ? 's' : ''}`,
-                        x: rect.left - wRect.left + rect.width / 2,
-                        y: rect.top  - wRect.top  - 32,
+                        x: Math.max(30, Math.min(rawX, wRect.width - 30)),
+                        y: rect.top - wRect.top - 32,
                       });
                     }}
                     onMouseLeave={() => setTooltip(null)}

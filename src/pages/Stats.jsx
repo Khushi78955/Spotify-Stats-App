@@ -90,7 +90,7 @@ export default function Stats() {
   return (
     <>
       <Navbar user={user} />
-      <div className="page">
+      <div className="page" role="main" id="main-content">
         <div className="container">
           <div className={styles.header}>
             <div>

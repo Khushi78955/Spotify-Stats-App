@@ -14,6 +14,7 @@ export default function TopTracks() {
   const [timeRange, setTimeRange] = useTimeRange();
   const [tracks, setTracks] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState('');
 
   useEffect(() => { document.title = 'Top Tracks · Statify'; }, []);
 
@@ -34,10 +35,15 @@ export default function TopTracks() {
     return () => { mounted = false; };
   }, [timeRange]);
 
+  const filtered = tracks?.items?.filter((t) =>
+    !query || t.name.toLowerCase().includes(query.toLowerCase()) ||
+    t.artists?.some((a) => a.name.toLowerCase().includes(query.toLowerCase()))
+  ) ?? [];
+
   return (
     <>
       <Navbar user={user} />
-      <div className="page">
+      <div className="page" role="main" id="main-content">
         <div className="container">
           <div className={styles.header}>
             <div>
@@ -47,13 +53,23 @@ export default function TopTracks() {
             <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
           </div>
 
+          <input
+            className={styles.search}
+            type="search"
+            placeholder="Filter tracks or artists…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            aria-label="Filter tracks"
+          />
+
           <div className={styles.list}>
             {loading
               ? Array.from({ length: 10 }, (_, i) => <SkeletonCard key={i} height={88} />)
-              : tracks?.items?.map((t, i) => (
-                  <TrackCard key={t.id} track={t} rank={i + 1} />
-                ))
+              : filtered.map((t, i) => <TrackCard key={t.id} track={t} rank={i + 1} />)
             }
+            {!loading && filtered.length === 0 && (
+              <p className={styles.empty}>No tracks match "{query}"</p>
+            )}
           </div>
         </div>
       </div>

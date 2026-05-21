@@ -27,11 +27,12 @@ function getPersonality(artists) {
   return PERSONALITIES[genres[0].category] || PERSONALITIES.eclectic;
 }
 
-// Rough lifetime estimate: top-N tracks × avg duration × 20 assumed plays each
+// Lifetime estimate: top-N tracks × avg duration × assumed plays each
+const ASSUMED_PLAYS = 15;
 function estimatedMinutes(tracks) {
   if (!tracks?.length) return 0;
   const avgMs = tracks.reduce((s, t) => s + (t.duration_ms || 210000), 0) / tracks.length;
-  return Math.round((avgMs * tracks.length * 20) / 60000);
+  return Math.round((avgMs * tracks.length * ASSUMED_PLAYS) / 60000);
 }
 
 function formatMinutes(mins) {
@@ -167,7 +168,7 @@ export default function PersonalityCard({ user, topTracks, topArtists, audioFeat
 
         {/* Quick stats */}
         <div className={styles.quickStats}>
-          <div className={styles.quickStat} title="Rough estimate: top tracks × avg duration × ~20 plays">
+          <div className={styles.quickStat} title={`Estimate: top tracks × avg duration × ${ASSUMED_PLAYS} assumed plays`}>
             <span className={styles.quickStatVal}>{formatMinutes(estMins)}</span>
             <span className={styles.quickStatLbl}>Est. Total~</span>
           </div>

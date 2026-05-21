@@ -18,6 +18,30 @@
   color: var(--text-secondary);
 }
 
+.search {
+  width: 100%;
+  max-width: 380px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search:focus { border-color: var(--accent-green); }
+.search::placeholder { color: var(--text-muted); }
+
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px 0;
+  font-size: 14px;
+}
+
 .list {
   display: flex;
   flex-direction: column;

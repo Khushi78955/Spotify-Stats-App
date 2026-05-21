@@ -9,21 +9,27 @@ const WINDOWS = [
   { key: 'long_term',   label: 'All Time', color: '#8b5cf6' },
 ];
 
+// Module-level cache — shared across Dashboard + Stats, fetched only once per session
+let cachedData = null;
+
 function useThreeWindows() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(cachedData);
+  const [loading, setLoading] = useState(!cachedData);
 
   useEffect(() => {
+    if (cachedData) return;
     let mounted = true;
     async function load() {
       try {
         const [s, m, l] = await Promise.all(
           WINDOWS.map((w) => getTopArtists(w.key, 20))
         );
-        if (mounted) setData({ short: s.items, medium: m.items, long: l.items });
+        cachedData = { short: s.items, medium: m.items, long: l.items };
+        if (mounted) setData(cachedData);
       } catch {
         const mock = MOCK_TOP_ARTISTS.items;
-        if (mounted) setData({ short: mock, medium: mock, long: mock });
+        cachedData = { short: mock, medium: mock, long: mock };
+        if (mounted) setData(cachedData);
       } finally {
         if (mounted) setLoading(false);
       }

@@ -47,6 +47,14 @@ function StatCard({ label, value, icon, color }) {
 export default function Dashboard() {
   useEffect(() => { document.title = 'Dashboard · Statify'; }, []);
   const [timeRange, setTimeRange] = useTimeRange();
+  const [debouncedRange, setDebouncedRange] = useState(timeRange);
+  const debounceRef = useRef(null);
+
+  const handleRangeChange = (val) => {
+    setTimeRange(val);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedRange(val), 300);
+  };
   const [user, setUser] = useState(null);
   const [tracks, setTracks] = useState(null);
   const [artists, setArtists] = useState(null);
@@ -57,9 +65,10 @@ export default function Dashboard() {
   const [initialized, setInitialized] = useState(false);
   const gridRef = useRef(null);
 
-  // GSAP scroll animations on cards
+  // GSAP scroll animations on cards (skipped for reduced-motion preference)
   useEffect(() => {
     if (loading) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const ctx = gsap.context(() => {
       gsap.utils.toArray('.card').forEach((el) => {
         gsap.fromTo(
@@ -94,7 +103,7 @@ export default function Dashboard() {
     return () => { mounted = false; };
   }, []);
 
-  // Time-range: tracks + artists + audio features
+  // Time-range: tracks + artists + audio features (uses debounced value)
   useEffect(() => {
     if (!initialized) return;
     let mounted = true;
@@ -105,7 +114,7 @@ export default function Dashboard() {
       }
       setLoading(true);
       try {
-        const [t, a] = await Promise.all([getTopTracks(timeRange, 50), getTopArtists(timeRange, 50)]);
+        const [t, a] = await Promise.all([getTopTracks(debouncedRange, 50), getTopArtists(debouncedRange, 50)]);
         if (!mounted) return;
         setTracks(t); setArtists(a);
         try {
@@ -123,7 +132,7 @@ export default function Dashboard() {
     }
     loadRange();
     return () => { mounted = false; };
-  }, [timeRange, initialized, demoMode]);
+  }, [debouncedRange, initialized, demoMode]);
 
   const topGenres = artists ? getTopGenres(artists.items, 3) : [];
   const topGenreLabel = topGenres[0]?.genre || 'Various';
@@ -131,7 +140,7 @@ export default function Dashboard() {
   return (
     <>
       <Navbar user={user} />
-      <div className={`page ${styles.page}`}>
+      <div className={`page ${styles.page}`} role="main" id="main-content">
         <div className="container">
           {demoMode && (
             <div className={styles.demoBanner}>
@@ -147,7 +156,7 @@ export default function Dashboard() {
               </h1>
               <p className={styles.welcomeSub}>Here's your listening overview</p>
             </div>
-            <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
+            <TimeRangeSelector value={timeRange} onChange={handleRangeChange} />
           </div>
 
           {/* Stat cards */}
@@ -157,10 +166,10 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className={`${styles.statsRow} grid-4`}>
-              <StatCard label="Top Genre"       value={topGenreLabel}               icon="🎭" color="var(--accent-purple)" />
-              <StatCard label="Artists Tracked" value={artists?.items?.length || 0}  icon="🎤" color="var(--accent-green)" />
-              <StatCard label="Tracks Tracked"  value={tracks?.items?.length || 0}   icon="🎵" color="var(--accent-blue)" />
-              <StatCard label="Recent Plays"    value={recent?.items?.length || 0}   icon="🕐" color="var(--accent-orange)" />
+              <StatCard key={`genre-${debouncedRange}`}   label="Top Genre"       value={topGenreLabel}               icon="🎭" color="var(--accent-purple)" />
+              <StatCard key={`artists-${debouncedRange}`} label="Artists Tracked" value={artists?.items?.length || 0}  icon="🎤" color="var(--accent-green)" />
+              <StatCard key={`tracks-${debouncedRange}`}  label="Tracks Tracked"  value={tracks?.items?.length || 0}   icon="🎵" color="var(--accent-blue)" />
+              <StatCard key={`recent-${debouncedRange}`}  label="Recent Plays"    value={recent?.items?.length || 0}   icon="🕐" color="var(--accent-orange)" />
             </div>
           )}
 

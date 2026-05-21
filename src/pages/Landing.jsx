@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getAuthUrl, IS_DEMO_MODE } from '../auth/SpotifyAuth';
 import { isLoggedIn } from '../auth/SpotifyAuth';
-import AudioSphere from '../components/AudioSphere';
 import styles from './Landing.module.css';
+
+const AudioSphere = lazy(() => import('../components/AudioSphere'));
 
 const AUTH_ERRORS = {
   auth_failed: 'Spotify login was cancelled or denied. Please try again.',
@@ -35,7 +36,9 @@ export default function Landing() {
 
   return (
     <div className={styles.page}>
-      <AudioSphere />
+      <Suspense fallback={null}>
+        <AudioSphere />
+      </Suspense>
 
       {errorMsg && (
         <div className={styles.errorBanner}>
