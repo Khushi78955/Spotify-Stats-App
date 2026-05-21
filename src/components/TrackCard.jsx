@@ -14,7 +14,7 @@ export default function TrackCard({ track, rank, compact = false }) {
     return (
       <div className={styles.compact} style={{ animationDelay: `${rank * 50}ms` }}>
         <span className={styles.compactRank}>#{rank}</span>
-        {image && <img src={image} alt={track.name} className={styles.compactImg} />}
+        {image && <img src={image} alt={track.name} className={styles.compactImg} loading="lazy" />}
         <div className={styles.compactInfo}>
           <span className={styles.compactName}>{track.name}</span>
           <span className={styles.compactArtist}>{artists}</span>
@@ -28,7 +28,7 @@ export default function TrackCard({ track, rank, compact = false }) {
     <div className={`${styles.card} fade-in`} style={{ animationDelay: `${rank * 40}ms` }}>
       <div className={styles.rank}>#{rank}</div>
       {image ? (
-        <img src={image} alt={track.name} className={styles.image} />
+        <img src={image} alt={track.name} className={styles.image} loading="lazy" />
       ) : (
         <div className={styles.imageFallback}>♪</div>
       )}

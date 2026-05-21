@@ -126,7 +126,7 @@ export default function Dashboard() {
   }, [timeRange, initialized, demoMode]);
 
   const topGenres = artists ? getTopGenres(artists.items, 3) : [];
-  const topGenreLabel = topGenres[0]?.genre || '—';
+  const topGenreLabel = topGenres[0]?.genre || 'Various';
 
   return (
     <>

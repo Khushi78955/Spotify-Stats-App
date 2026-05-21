@@ -27,6 +27,7 @@ function getPersonality(artists) {
   return PERSONALITIES[genres[0].category] || PERSONALITIES.eclectic;
 }
 
+// Rough lifetime estimate: top-N tracks × avg duration × 20 assumed plays each
 function estimatedMinutes(tracks) {
   if (!tracks?.length) return 0;
   const avgMs = tracks.reduce((s, t) => s + (t.duration_ms || 210000), 0) / tracks.length;
@@ -166,9 +167,9 @@ export default function PersonalityCard({ user, topTracks, topArtists, audioFeat
 
         {/* Quick stats */}
         <div className={styles.quickStats}>
-          <div className={styles.quickStat}>
+          <div className={styles.quickStat} title="Rough estimate: top tracks × avg duration × ~20 plays">
             <span className={styles.quickStatVal}>{formatMinutes(estMins)}</span>
-            <span className={styles.quickStatLbl}>Est. Listening</span>
+            <span className={styles.quickStatLbl}>Est. Total~</span>
           </div>
           <div className={styles.quickStatDivider} />
           <div className={styles.quickStat}>

@@ -15,7 +15,7 @@ export default function ArtistCard({ artist, rank, compact = false }) {
       <div className={styles.compact} style={{ animationDelay: `${rank * 50}ms` }}>
         <span className={styles.compactRank}>#{rank}</span>
         {image ? (
-          <img src={image} alt={artist.name} className={styles.compactImg} />
+          <img src={image} alt={artist.name} className={styles.compactImg} loading="lazy" />
         ) : (
           <div className={styles.compactImgFallback}>{artist.name[0]}</div>
         )}
@@ -32,7 +32,7 @@ export default function ArtistCard({ artist, rank, compact = false }) {
     <div className={`${styles.card} fade-in`} style={{ animationDelay: `${rank * 40}ms` }}>
       <div className={styles.rank}>#{rank}</div>
       {image ? (
-        <img src={image} alt={artist.name} className={styles.image} />
+        <img src={image} alt={artist.name} className={styles.image} loading="lazy" />
       ) : (
         <div className={styles.imageFallback}>{artist.name[0]}</div>
       )}

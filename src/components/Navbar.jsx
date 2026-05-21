@@ -95,11 +95,12 @@ export default function Navbar({ user }) {
               ? <img src={avatar} alt="avatar" className={styles.avatar} />
               : <div className={styles.avatarFallback}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</div>
             }
-            <button className={styles.logout} onClick={logout} title="Logout">⏻</button>
+            <button className={styles.logout} onClick={logout} title="Logout" aria-label="Logout">⏻</button>
             <button
               className={styles.hamburger}
               onClick={() => setMenuOpen((o) => !o)}
-              aria-label="Toggle menu"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
             >
               <span className={`${styles.bar} ${menuOpen ? styles.barTop : ''}`} />
               <span className={`${styles.bar} ${menuOpen ? styles.barMid : ''}`} />
