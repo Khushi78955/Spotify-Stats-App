@@ -7,7 +7,7 @@
 }
 
 .scoreBig {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 52px;
   font-weight: 800;
   line-height: 1;
@@ -17,7 +17,7 @@
 .scoreRight { display: flex; flex-direction: column; gap: 4px; }
 
 .scoreLabel {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 16px;
   font-weight: 700;
 }

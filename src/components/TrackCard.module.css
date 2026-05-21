@@ -18,7 +18,7 @@
 }
 
 .rank {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 18px;
   font-weight: 800;
   color: var(--text-muted);
@@ -136,7 +136,7 @@
 }
 
 .compactRank {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);

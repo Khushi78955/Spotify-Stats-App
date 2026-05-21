@@ -54,7 +54,7 @@
 }
 
 .statIcon { font-size: 22px; }
-.statValue { font-family: 'Syne',sans-serif; font-size: 28px; font-weight: 800; line-height: 1; }
+.statValue { font-family: 'Space Grotesk',sans-serif; font-size: 28px; font-weight: 800; line-height: 1; }
 .statLabel { font-size: 13px; color: var(--text-secondary); }
 
 /* Bento grid */

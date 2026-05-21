@@ -92,7 +92,7 @@
 }
 
 .headline {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(44px, 8vw, 84px);
   font-weight: 800;
   line-height: 1.05;
@@ -136,7 +136,7 @@
   padding: 18px 40px;
   background: linear-gradient(135deg, #1db954, #17a347);
   color: white;
-  font-family: 'Syne', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
   font-size: 17px;
   border-radius: 50px;
@@ -255,7 +255,7 @@
 }
 
 .previewIcon { font-size: 16px; }
-.previewVal { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 800; color: var(--text-primary); }
+.previewVal { font-family: 'Space Grotesk',sans-serif; font-size: 18px; font-weight: 800; color: var(--text-primary); }
 .previewLabel { font-size: 11px; color: var(--text-muted); }
 
 /* Scroll indicator — rotated 90deg chevrons pointing down */

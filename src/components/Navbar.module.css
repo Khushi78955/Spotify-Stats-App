@@ -42,7 +42,7 @@
 }
 
 .logoIcon { font-size: 22px; color: var(--accent-green); }
-.logoText  { font-family: 'Syne',sans-serif; font-weight: 800; font-size: 20px; color: var(--text-primary); }
+.logoText  { font-family: 'Space Grotesk',sans-serif; font-weight: 800; font-size: 20px; color: var(--text-primary); }
 
 /* Links + sliding indicator */
 .linksWrapper {

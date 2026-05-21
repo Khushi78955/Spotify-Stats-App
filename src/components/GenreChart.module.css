@@ -13,7 +13,7 @@
 }
 
 .tooltipGenre { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-.tooltipPct   { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent-green); }
+.tooltipPct   { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent-green); }
 .tooltipCount { font-size: 11px; color: var(--text-muted); }
 
 .pills {
