@@ -8,11 +8,15 @@ import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { useTimeRange } from '../hooks/useTimeRange';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 import { getTopGenres, getGenreColor } from '../utils/genreUtils';
 import styles from './Genres.module.css';
 
 export default function Genres() {
+  const user = useCurrentUser();
   const [timeRange, setTimeRange] = useTimeRange();
+
+  useEffect(() => { document.title = 'Genres · Statify'; }, []);
   const [artists, setArtists] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +42,7 @@ export default function Genres() {
 
   return (
     <>
-      <Navbar />
+      <Navbar user={user} />
       <div className="page">
         <div className="container">
           <div className={styles.header}>

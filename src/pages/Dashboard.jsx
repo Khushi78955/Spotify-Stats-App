@@ -11,6 +11,7 @@ import MoodScore from '../components/MoodScore';
 import DiversityScore from '../components/DiversityScore';
 import PersonalityCard from '../components/PersonalityCard';
 import TimeRangeSelector from '../components/TimeRangeSelector';
+import TasteEvolution from '../components/TasteEvolution';
 import { SkeletonCard } from '../components/LoadingSpinner';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { useTimeRange } from '../hooks/useTimeRange';
@@ -28,6 +29,7 @@ function StatCard({ label, value, icon, color }) {
 }
 
 export default function Dashboard() {
+  useEffect(() => { document.title = 'Dashboard · Statify'; }, []);
   const [timeRange, setTimeRange] = useTimeRange();
   const [user, setUser] = useState(null);
   const [tracks, setTracks] = useState(null);
@@ -248,6 +250,17 @@ export default function Dashboard() {
                   ? <SkeletonCard height={180} />
                   : <DiversityScore artists={artists?.items || []} />
                 }
+              </div>
+            </ErrorBoundary>
+
+            {/* Taste Evolution */}
+            <ErrorBoundary label="Taste Evolution">
+              <div className={`card ${styles.section}`}>
+                <h2 className={styles.sectionTitle}>Taste Over Time</h2>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '-4px 0 0' }}>
+                  How your top artists shifted across time windows
+                </p>
+                <TasteEvolution />
               </div>
             </ErrorBoundary>
 

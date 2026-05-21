@@ -6,12 +6,16 @@ import ArtistCard from '../components/ArtistCard';
 import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
 import { useTimeRange } from '../hooks/useTimeRange';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 import styles from './TopItems.module.css';
 
 export default function TopArtists() {
+  const user = useCurrentUser();
   const [timeRange, setTimeRange] = useTimeRange();
   const [artists, setArtists] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => { document.title = 'Top Artists · Statify'; }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -32,7 +36,7 @@ export default function TopArtists() {
 
   return (
     <>
-      <Navbar />
+      <Navbar user={user} />
       <div className="page">
         <div className="container">
           <div className={styles.header}>

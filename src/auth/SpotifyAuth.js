@@ -2,6 +2,8 @@ const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
 
+export const IS_DEMO_MODE = !CLIENT_ID || CLIENT_ID === 'your_client_id_here';
+
 const SCOPES = [
   'user-top-read',
   'user-read-recently-played',

@@ -6,12 +6,16 @@ import TrackCard from '../components/TrackCard';
 import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
 import { useTimeRange } from '../hooks/useTimeRange';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 import styles from './TopItems.module.css';
 
 export default function TopTracks() {
+  const user = useCurrentUser();
   const [timeRange, setTimeRange] = useTimeRange();
   const [tracks, setTracks] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => { document.title = 'Top Tracks · Statify'; }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -32,7 +36,7 @@ export default function TopTracks() {
 
   return (
     <>
-      <Navbar />
+      <Navbar user={user} />
       <div className="page">
         <div className="container">
           <div className={styles.header}>

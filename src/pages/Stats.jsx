@@ -9,9 +9,11 @@ import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { useTimeRange } from '../hooks/useTimeRange';
+import TasteEvolution from '../components/TasteEvolution';
 import styles from './Stats.module.css';
 
 export default function Stats() {
+  useEffect(() => { document.title = 'Listening Stats · Statify'; }, []);
   const [timeRange, setTimeRange] = useTimeRange();
   const [user, setUser] = useState(null);
   const [artists, setArtists] = useState(null);
@@ -144,6 +146,15 @@ export default function Stats() {
               </div>
             </ErrorBoundary>
           </div>
+
+          {/* Taste Evolution */}
+          <ErrorBoundary label="Taste Evolution">
+            <div className={`card ${styles.section}`}>
+              <h2 className={styles.sectionTitle}>Taste Over Time</h2>
+              <p className={styles.sectionSub}>How your top artists shifted across time windows</p>
+              <TasteEvolution />
+            </div>
+          </ErrorBoundary>
         </div>
       </div>
     </>
