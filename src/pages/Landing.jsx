@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getAuthUrl, IS_DEMO_MODE } from '../auth/SpotifyAuth';
 import { isLoggedIn } from '../auth/SpotifyAuth';
+import AudioSphere from '../components/AudioSphere';
 import styles from './Landing.module.css';
 
 const AUTH_ERRORS = {
@@ -34,17 +35,14 @@ export default function Landing() {
 
   return (
     <div className={styles.page}>
+      <AudioSphere />
+
       {errorMsg && (
         <div className={styles.errorBanner}>
           <span className={styles.errorIcon}>⚠</span>
           {errorMsg}
         </div>
       )}
-      <div className={styles.bgOrbs}>
-        <div className={styles.orb1} />
-        <div className={styles.orb2} />
-        <div className={styles.orb3} />
-      </div>
 
       <div className={styles.content}>
         <div className={styles.badge}>
@@ -54,7 +52,8 @@ export default function Landing() {
 
         <h1 className={styles.headline}>
           Discover Your
-          <span className={styles.highlight}> Music DNA</span>
+          <br />
+          <span className={styles.highlight}>Music DNA</span>
         </h1>
 
         <p className={styles.sub}>
@@ -63,15 +62,8 @@ export default function Landing() {
         </p>
 
         {IS_DEMO_MODE && (
-          <div style={{
-            fontSize: 12, color: 'var(--text-muted)',
-            padding: '8px 14px',
-            background: 'rgba(139,92,246,0.08)',
-            border: '1px solid rgba(139,92,246,0.2)',
-            borderRadius: 8,
-            marginBottom: -8,
-          }}>
-            💡 No Client ID set — app will run in demo mode with sample data
+          <div className={styles.demoNotice}>
+            💡 No Client ID set — app runs in demo mode with sample data
           </div>
         )}
 
@@ -82,9 +74,7 @@ export default function Landing() {
           Connect with Spotify
         </button>
 
-        <p className={styles.disclaimer}>
-          We only read your listening data — no posts, no changes.
-        </p>
+        <p className={styles.disclaimer}>We only read your listening data — no posts, no changes.</p>
 
         <div className={styles.features}>
           {[
@@ -104,37 +94,30 @@ export default function Landing() {
         </div>
 
         {/* App preview mockup */}
-        <div style={{
-          marginTop: 8, width: '100%',
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 16, overflow: 'hidden', opacity: 0.85,
-        }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '10px 14px',
-            borderBottom: '1px solid var(--border)',
-            background: 'var(--bg-secondary)',
-          }}>
+        <div className={styles.preview}>
+          <div className={styles.previewBar}>
             {['#ef4444', '#f59e0b', '#1db954'].map((c) => (
-              <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
+              <div key={c} className={styles.previewDot} style={{ background: c }} />
             ))}
-            <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 4 }}>statify.app/dashboard</span>
+            <span className={styles.previewUrl}>statify.app/dashboard</span>
           </div>
-          <div style={{ padding: '20px 16px', display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 8 }}>
+          <div className={styles.previewGrid}>
             {PREVIEW_STATS.map((s) => (
-              <div key={s.label} style={{
-                background: 'var(--bg-card)', border: '1px solid var(--border)',
-                borderRadius: 10, padding: '12px 14px',
-                display: 'flex', flexDirection: 'column', gap: 4,
-              }}>
-                <span style={{ fontSize: 16 }}>{s.icon}</span>
-                <span style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 800 }}>{s.val}</span>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{s.label}</span>
+              <div key={s.label} className={styles.previewCard}>
+                <span className={styles.previewIcon}>{s.icon}</span>
+                <span className={styles.previewVal}>{s.val}</span>
+                <span className={styles.previewLabel}>{s.label}</span>
               </div>
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className={styles.scrollIndicator}>
+        <span className={styles.chevron}>›</span>
+        <span className={styles.chevron}>›</span>
+        <span className={styles.chevron}>›</span>
       </div>
     </div>
   );

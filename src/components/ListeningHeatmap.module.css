@@ -1,4 +1,39 @@
-.wrapper { display: flex; flex-direction: column; gap: 10px; }
+@keyframes cellIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes hotPulse {
+  0%, 100% { filter: brightness(1); }
+  50%       { filter: brightness(1.35); }
+}
+
+@keyframes tooltipIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(20,20,30,0.95);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: white;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  transform: translateX(-50%);
+  animation: tooltipIn 0.15s ease forwards;
+}
 
 .topRow {
   display: flex;
@@ -21,40 +56,39 @@
   grid-template-columns: 34px repeat(7, 1fr);
   gap: 3px;
   min-width: 320px;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.corner { /* top-left spacer */ }
+.corner {}
 
 .dayLabel {
-  font-size: 10px;
-  color: var(--text-muted);
-  text-align: center;
-  font-weight: 500;
-  padding-bottom: 2px;
+  font-size: 10px; color: var(--text-muted);
+  text-align: center; font-weight: 500; padding-bottom: 2px;
 }
 
 .hourLabel {
-  font-size: 10px;
-  color: var(--text-muted);
-  text-align: right;
-  padding-right: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 14px;
+  font-size: 10px; color: var(--text-muted);
+  text-align: right; padding-right: 5px;
+  display: flex; align-items: center; justify-content: flex-end; height: 14px;
 }
 
 .cell {
   height: 14px;
   border-radius: 2px;
-  transition: transform 0.1s ease, filter 0.1s ease;
   cursor: default;
+  animation: cellIn 0.3s ease both;
+  transition: filter 0.1s ease, transform 0.1s ease;
 }
 
 .cell:hover {
-  transform: scale(1.35);
-  filter: brightness(1.4);
+  transform: scale(1.4);
+  filter: brightness(1.5);
   z-index: 1;
+}
+
+.cellHot {
+  animation: cellIn 0.3s ease both, hotPulse 2s ease-in-out infinite;
 }
 
 .peak {

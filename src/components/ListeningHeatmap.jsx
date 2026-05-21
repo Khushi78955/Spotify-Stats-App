@@ -1,20 +1,21 @@
-import { useMemo, Fragment } from 'react';
+import { useMemo, useState, Fragment } from 'react';
 import styles from './ListeningHeatmap.module.css';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const AXIS_HOURS = [0, 4, 8, 12, 16, 20];
 
 function hourLabel(h) {
-  if (h === 0) return '12am';
+  if (h === 0)  return '12am';
   if (h === 12) return '12pm';
   return h < 12 ? `${h}am` : `${h - 12}pm`;
 }
 
 export default function ListeningHeatmap({ recentlyPlayed }) {
+  const [tooltip, setTooltip] = useState(null);
+
   const { grid, maxCount, peakLabel, totalTracks, dateRange } = useMemo(() => {
     const g = Array.from({ length: 24 }, () => Array(7).fill(0));
     const items = recentlyPlayed?.items ?? [];
-
     if (!items.length) return { grid: g, maxCount: 0, peakLabel: 'No data yet', totalTracks: 0, dateRange: null };
 
     let earliest = Infinity, latest = -Infinity;
@@ -22,21 +23,16 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
       const d = new Date(item.played_at);
       const t = d.getTime();
       if (t < earliest) earliest = t;
-      if (t > latest) latest = t;
+      if (t > latest)   latest   = t;
       g[d.getHours()][d.getDay()]++;
     }
 
     let maxCount = 0, peakH = 0, peakD = 0;
-    for (let h = 0; h < 24; h++) {
-      for (let d = 0; d < 7; d++) {
+    for (let h = 0; h < 24; h++)
+      for (let d = 0; d < 7; d++)
         if (g[h][d] > maxCount) { maxCount = g[h][d]; peakH = h; peakD = d; }
-      }
-    }
 
-    const peakLabel = maxCount > 0
-      ? `Peak: ${DAYS[peakD]}s around ${hourLabel(peakH)}`
-      : 'No data yet';
-
+    const peakLabel = maxCount > 0 ? `Peak: ${DAYS[peakD]}s around ${hourLabel(peakH)}` : 'No data yet';
     const fmt = (ts) => new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     const dateRange = earliest !== Infinity ? `${fmt(earliest)} – ${fmt(latest)}` : null;
 
@@ -54,6 +50,12 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
 
   return (
     <div className={styles.wrapper}>
+      {tooltip && (
+        <div className={styles.tooltip} style={{ left: tooltip.x, top: tooltip.y }}>
+          {tooltip.label}
+        </div>
+      )}
+
       <div className={styles.topRow}>
         <span className={styles.sample}>
           {totalTracks} plays sampled{dateRange ? ` · ${dateRange}` : ''}
@@ -69,7 +71,7 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
       </div>
 
       <div className={styles.scroll}>
-        <div className={styles.grid}>
+        <div className={styles.grid} style={{ boxShadow: '0 8px 32px rgba(29,185,84,0.15)' }}>
           <div className={styles.corner} />
           {DAYS.map((d) => <div key={d} className={styles.dayLabel}>{d}</div>)}
 
@@ -78,14 +80,32 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
               <div className={styles.hourLabel}>
                 {AXIS_HOURS.includes(h) ? hourLabel(h) : ''}
               </div>
-              {DAYS.map((_, di) => (
-                <div
-                  key={`${h}-${di}`}
-                  className={styles.cell}
-                  style={{ background: cellColor(grid[h][di]) }}
-                  title={`${DAYS[di]} ${hourLabel(h)}: ${grid[h][di]} tracks`}
-                />
-              ))}
+              {DAYS.map((_, di) => {
+                const count = grid[h][di];
+                const delay = (h * 7 + di) * 4;
+                const isHot = maxCount > 0 && count / maxCount >= 0.75;
+                return (
+                  <div
+                    key={`${h}-${di}`}
+                    className={`${styles.cell} ${isHot ? styles.cellHot : ''}`}
+                    style={{
+                      background: cellColor(count),
+                      animationDelay: `${delay}ms`,
+                    }}
+                    onMouseEnter={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const wrap = e.currentTarget.closest('.' + styles.scroll);
+                      const wRect = wrap?.getBoundingClientRect() || rect;
+                      setTooltip({
+                        label: `${DAYS[di]} ${hourLabel(h)}: ${count} play${count !== 1 ? 's' : ''}`,
+                        x: rect.left - wRect.left + rect.width / 2,
+                        y: rect.top  - wRect.top  - 32,
+                      });
+                    }}
+                    onMouseLeave={() => setTooltip(null)}
+                  />
+                );
+              })}
             </Fragment>
           ))}
         </div>

@@ -1,0 +1,48 @@
+.inner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.outer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  will-change: transform;
+  transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.outerButton {
+  width: 64px;
+  height: 64px;
+  border-color: rgba(29,185,84,0.6);
+  background: rgba(29,185,84,0.12);
+  margin-left: -14px;
+  margin-top: -14px;
+}
+
+.outerCard {
+  width: 36px;
+  height: 36px;
+  border-color: rgba(255,255,255,0.3);
+  border-radius: 0;
+  clip-path: polygon(0 6px,6px 6px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 6px),0 calc(100% - 6px));
+}
+
+/* Hide on touch devices */
+@media (hover: none) {
+  .inner, .outer { display: none; }
+}

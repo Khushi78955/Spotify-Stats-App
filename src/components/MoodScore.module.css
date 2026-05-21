@@ -1,3 +1,8 @@
+@keyframes spinRing {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -19,53 +24,64 @@
   letter-spacing: 0.08em;
 }
 
-.vibeSource {
-  font-size: 11px;
-  color: var(--text-muted);
-  opacity: 0.7;
-}
-
 .vibeName {
   font-family: 'Syne', sans-serif;
   font-size: 22px;
   font-weight: 800;
 }
 
+.vibeSource {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
 .circles {
   display: flex;
-  gap: 32px;
-  justify-content: center;
+  gap: 24px;
+  align-items: flex-start;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .circle {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  position: relative;
+  gap: 6px;
 }
 
 .svg {
-  display: block;
+  overflow: visible;
+}
+
+/* Rotating outer decorative ring */
+.outerRing {
+  transform-origin: 50px 50px;
+  animation: spinRing 8s linear infinite;
+}
+
+/* Arc animates via CSS transition on strokeDashoffset */
+.arc {
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .circleInner {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, calc(-50% - 10px));
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
 }
 
-.circleIcon {
-  font-size: 16px;
-  line-height: 1;
+.circle {
+  position: relative;
 }
 
+.circleIcon { font-size: 14px; line-height: 1; }
 .circleValue {
   font-family: 'Syne', sans-serif;
   font-size: 18px;
@@ -75,6 +91,6 @@
 
 .circleLabel {
   font-size: 12px;
-  color: var(--text-secondary);
-  font-weight: 500;
+  color: var(--text-muted);
+  text-align: center;
 }
