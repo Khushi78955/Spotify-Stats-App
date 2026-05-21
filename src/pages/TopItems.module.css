@@ -18,9 +18,14 @@
   color: var(--text-secondary);
 }
 
+.resultCount {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
 .search {
   width: 100%;
-  max-width: 380px;
   padding: 10px 16px;
   margin-bottom: 20px;
   background: var(--bg-card);

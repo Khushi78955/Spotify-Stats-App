@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { getTopArtists } from '../api/spotify';
 import { MOCK_TOP_ARTISTS } from '../api/mockData';
 import Navbar from '../components/Navbar';
 import ArtistCard from '../components/ArtistCard';
 import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
+import EmptyState from '../components/EmptyState';
 import { useTimeRange } from '../hooks/useTimeRange';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import styles from './TopItems.module.css';
+
+const ArtistModal = lazy(() => import('../components/ArtistModal'));
 
 export default function TopArtists() {
   const user = useCurrentUser();
@@ -15,6 +18,7 @@ export default function TopArtists() {
   const [artists, setArtists] = useState(null);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
+  const [selectedArtist, setSelectedArtist] = useState(null);
 
   useEffect(() => { document.title = 'Top Artists · Statify'; }, []);
 
@@ -36,7 +40,8 @@ export default function TopArtists() {
   }, [timeRange]);
 
   const filtered = artists?.items?.filter((a) =>
-    !query || a.name.toLowerCase().includes(query.toLowerCase()) ||
+    !query ||
+    a.name.toLowerCase().includes(query.toLowerCase()) ||
     a.genres?.some((g) => g.toLowerCase().includes(query.toLowerCase()))
   ) ?? [];
 
@@ -56,23 +61,35 @@ export default function TopArtists() {
           <input
             className={styles.search}
             type="search"
-            placeholder="Filter artists or genres…"
+            placeholder="Search artists or genres…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             aria-label="Filter artists"
           />
+          {query && (
+            <p className={styles.resultCount}>
+              {filtered.length} result{filtered.length !== 1 ? 's' : ''} for "{query}"
+            </p>
+          )}
 
           <div className={styles.list}>
             {loading
               ? Array.from({ length: 10 }, (_, i) => <SkeletonCard key={i} height={88} />)
-              : filtered.map((a, i) => <ArtistCard key={a.id} artist={a} rank={i + 1} />)
+              : filtered.length === 0
+                ? <EmptyState type={query ? 'search' : 'artists'} />
+                : filtered.map((a, i) => (
+                    <div key={a.id} onClick={() => setSelectedArtist(a)} style={{ cursor: 'pointer' }}>
+                      <ArtistCard artist={a} rank={i + 1} />
+                    </div>
+                  ))
             }
-            {!loading && filtered.length === 0 && (
-              <p className={styles.empty}>No artists match "{query}"</p>
-            )}
           </div>
         </div>
       </div>
+
+      <Suspense fallback={null}>
+        <ArtistModal artist={selectedArtist} onClose={() => setSelectedArtist(null)} />
+      </Suspense>
     </>
   );
 }

@@ -4,6 +4,8 @@ import { gsap } from 'gsap';
 import { logout } from '../auth/SpotifyAuth';
 import styles from './Navbar.module.css';
 
+const SHORTCUTS = [['D','Dashboard'],['T','Top Tracks'],['A','Top Artists'],['G','Genres'],['S','Stats']];
+
 const NAV_LINKS = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/tracks',    label: 'Top Tracks' },
@@ -13,7 +15,8 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar({ user }) {
-  const [menuOpen, setMenuOpen]       = useState(false);
+  const [menuOpen, setMenuOpen]         = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const [scrollPct, setScrollPct]     = useState(0);
   const navRef                        = useRef(null);
   const indicatorRef                  = useRef(null);
@@ -95,6 +98,25 @@ export default function Navbar({ user }) {
               ? <img src={avatar} alt="avatar" className={styles.avatar} />
               : <div className={styles.avatarFallback}>{user?.display_name?.[0]?.toUpperCase() || 'U'}</div>
             }
+            <div style={{ position: 'relative' }}>
+              <button
+                className={styles.shortcutBtn}
+                onClick={() => setShowShortcuts((v) => !v)}
+                aria-label="Keyboard shortcuts"
+                title="Keyboard shortcuts"
+              >⌨</button>
+              {showShortcuts && (
+                <div className={styles.shortcutPopover}>
+                  <div className={styles.shortcutTitle}>Keyboard Shortcuts</div>
+                  {SHORTCUTS.map(([key, label]) => (
+                    <div key={key} className={styles.shortcutRow}>
+                      <kbd className={styles.kbd}>{key}</kbd>
+                      <span>{label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <button className={styles.logout} onClick={logout} title="Logout" aria-label="Logout">⏻</button>
             <button
               className={styles.hamburger}

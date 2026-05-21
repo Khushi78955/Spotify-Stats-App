@@ -59,6 +59,21 @@ export async function getAudioFeatures(trackIds) {
   return request('/audio-features', { ids });
 }
 
+// Returns the currently playing track, or null if nothing is playing / not available.
+export async function getCurrentlyPlaying() {
+  try {
+    const token = await getValidToken();
+    if (!token) return null;
+    const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.status === 204 || !res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 // Paginates recently-played using cursor to collect up to maxItems tracks.
 export async function getRecentlyPlayedBatch(maxItems = 200) {
   const items = [];

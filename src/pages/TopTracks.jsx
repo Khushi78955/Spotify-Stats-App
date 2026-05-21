@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import TrackCard from '../components/TrackCard';
 import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
+import EmptyState from '../components/EmptyState';
 import { useTimeRange } from '../hooks/useTimeRange';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import styles from './TopItems.module.css';
@@ -36,7 +37,8 @@ export default function TopTracks() {
   }, [timeRange]);
 
   const filtered = tracks?.items?.filter((t) =>
-    !query || t.name.toLowerCase().includes(query.toLowerCase()) ||
+    !query ||
+    t.name.toLowerCase().includes(query.toLowerCase()) ||
     t.artists?.some((a) => a.name.toLowerCase().includes(query.toLowerCase()))
   ) ?? [];
 
@@ -56,20 +58,24 @@ export default function TopTracks() {
           <input
             className={styles.search}
             type="search"
-            placeholder="Filter tracks or artists…"
+            placeholder="Search tracks or artists…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            aria-label="Filter tracks"
+            aria-label="Search tracks"
           />
+          {query && (
+            <p className={styles.resultCount}>
+              {filtered.length} result{filtered.length !== 1 ? 's' : ''} for "{query}"
+            </p>
+          )}
 
           <div className={styles.list}>
             {loading
               ? Array.from({ length: 10 }, (_, i) => <SkeletonCard key={i} height={88} />)
-              : filtered.map((t, i) => <TrackCard key={t.id} track={t} rank={i + 1} />)
+              : filtered.length === 0
+                ? <EmptyState type={query ? 'search' : 'tracks'} />
+                : filtered.map((t, i) => <TrackCard key={t.id} track={t} rank={i + 1} />)
             }
-            {!loading && filtered.length === 0 && (
-              <p className={styles.empty}>No tracks match "{query}"</p>
-            )}
           </div>
         </div>
       </div>

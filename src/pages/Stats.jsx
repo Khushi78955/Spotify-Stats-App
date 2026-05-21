@@ -1,16 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { getUserProfile, getTopArtists, getTopTracks, getRecentlyPlayedBatch, getAudioFeatures } from '../api/spotify';
 import { MOCK_USER, MOCK_TOP_ARTISTS, MOCK_RECENTLY_PLAYED } from '../api/mockData';
+import { mergeRecentPlays, getAllPlays } from '../utils/historyDB';
 import Navbar from '../components/Navbar';
-import ListeningHeatmap from '../components/ListeningHeatmap';
-import MoodScore from '../components/MoodScore';
-import DiversityScore from '../components/DiversityScore';
 import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { useTimeRange } from '../hooks/useTimeRange';
-import TasteEvolution from '../components/TasteEvolution';
 import styles from './Stats.module.css';
+
+const ListeningHeatmap = lazy(() => import('../components/ListeningHeatmap'));
+const MoodScore        = lazy(() => import('../components/MoodScore'));
+const DiversityScore   = lazy(() => import('../components/DiversityScore'));
+const TasteEvolution   = lazy(() => import('../components/TasteEvolution'));
 
 export default function Stats() {
   useEffect(() => { document.title = 'Listening Stats · Statify'; }, []);
@@ -23,7 +25,9 @@ export default function Stats() {
   const [initialized, setInitialized] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
 
-  // Load user + recently played once
+  const sk = (h) => <SkeletonCard height={h} />;
+
+  // Load user + recently played once (with IndexedDB merge)
   useEffect(() => {
     let mounted = true;
     async function init() {
@@ -31,7 +35,15 @@ export default function Stats() {
         const [u, r] = await Promise.all([getUserProfile(), getRecentlyPlayedBatch(200)]);
         if (!mounted) return;
         setUser(u);
-        setRecent(r);
+        await mergeRecentPlays(r?.items);
+        const allPlays = await getAllPlays();
+        const historicalItems = allPlays.map((p) => ({
+          played_at: p.played_at,
+          track: { id: p.track_id, name: p.track_name },
+        }));
+        if (mounted) {
+          setRecent(historicalItems.length > (r?.items?.length || 0) ? { items: historicalItems } : r);
+        }
       } catch {
         if (!mounted) return;
         setUser(MOCK_USER);
@@ -49,7 +61,6 @@ export default function Stats() {
   useEffect(() => {
     if (!initialized) return;
     let mounted = true;
-
     async function loadRange() {
       if (demoMode) {
         setArtists(MOCK_TOP_ARTISTS);
@@ -59,21 +70,14 @@ export default function Stats() {
       }
       setLoading(true);
       try {
-        const [a, t] = await Promise.all([
-          getTopArtists(timeRange, 50),
-          getTopTracks(timeRange, 50),
-        ]);
+        const [a, t] = await Promise.all([getTopArtists(timeRange, 50), getTopTracks(timeRange, 50)]);
         if (!mounted) return;
         setArtists(a);
-
-        // Audio features best-effort
         try {
           const ids = t.items.slice(0, 100).map((x) => x.id);
           const af = await getAudioFeatures(ids);
           if (mounted) setAudioFeatures(af?.audio_features?.filter(Boolean) || null);
-        } catch {
-          if (mounted) setAudioFeatures(null);
-        }
+        } catch { if (mounted) setAudioFeatures(null); }
       } catch {
         if (!mounted) return;
         setArtists(MOCK_TOP_ARTISTS);
@@ -107,52 +111,46 @@ export default function Stats() {
             </div>
           )}
 
-          {/* Heatmap — full width, uses recent plays (no time range dependency) */}
+          {/* Heatmap — full width */}
           <ErrorBoundary label="Listening Patterns">
             <div className={`card ${styles.section}`}>
               <h2 className={styles.sectionTitle}>When You Listen</h2>
-              <p className={styles.sectionSub}>Hour-of-day × day-of-week heatmap from recent plays</p>
-              {loading
-                ? <SkeletonCard height={240} />
-                : <ListeningHeatmap recentlyPlayed={recent} />
+              <p className={styles.sectionSub}>Hour-of-day × day-of-week heatmap from accumulated history</p>
+              {loading ? sk(240)
+                : <Suspense fallback={sk(240)}><ListeningHeatmap recentlyPlayed={recent} /></Suspense>
               }
             </div>
           </ErrorBoundary>
 
           <div className={styles.twoCol}>
-            {/* Mood */}
             <ErrorBoundary label="Mood Analysis">
               <div className={`card ${styles.section}`}>
                 <h2 className={styles.sectionTitle}>Mood Analysis</h2>
                 <p className={styles.sectionSub}>
                   {audioFeatures?.length ? 'From real track audio features' : 'Estimated from top genres'}
                 </p>
-                {loading
-                  ? <SkeletonCard height={220} />
-                  : <MoodScore artists={artists?.items || []} audioFeatures={audioFeatures} />
+                {loading ? sk(220)
+                  : <Suspense fallback={sk(220)}><MoodScore artists={artists?.items || []} audioFeatures={audioFeatures} /></Suspense>
                 }
               </div>
             </ErrorBoundary>
 
-            {/* Diversity */}
             <ErrorBoundary label="Listening Diversity">
               <div className={`card ${styles.section}`}>
                 <h2 className={styles.sectionTitle}>Listening Diversity</h2>
                 <p className={styles.sectionSub}>How eclectic and underground your taste is</p>
-                {loading
-                  ? <SkeletonCard height={220} />
-                  : <DiversityScore artists={artists?.items || []} />
+                {loading ? sk(220)
+                  : <Suspense fallback={sk(220)}><DiversityScore artists={artists?.items || []} /></Suspense>
                 }
               </div>
             </ErrorBoundary>
           </div>
 
-          {/* Taste Evolution */}
           <ErrorBoundary label="Taste Evolution">
             <div className={`card ${styles.section}`}>
               <h2 className={styles.sectionTitle}>Taste Over Time</h2>
               <p className={styles.sectionSub}>How your top artists shifted across time windows</p>
-              <TasteEvolution />
+              <Suspense fallback={sk(160)}><TasteEvolution /></Suspense>
             </div>
           </ErrorBoundary>
         </div>

@@ -9,6 +9,7 @@ const SCOPES = [
   'user-read-recently-played',
   'user-read-private',
   'user-read-email',
+  'user-read-currently-playing',
 ].join(' ');
 
 function generateCodeVerifier() {

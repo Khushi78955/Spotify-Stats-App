@@ -9,32 +9,43 @@ const WINDOWS = [
   { key: 'long_term',   label: 'All Time', color: '#8b5cf6' },
 ];
 
-// Module-level cache — shared across Dashboard + Stats, fetched only once per session
-let cachedData = null;
+// Module-level cache — handles concurrent mounts (Dashboard + Stats simultaneously)
+let _tasteCache = null;
+let _tasteFetching = null;
 
 function useThreeWindows() {
-  const [data, setData] = useState(cachedData);
-  const [loading, setLoading] = useState(!cachedData);
+  const [data, setData] = useState(_tasteCache);
+  const [loading, setLoading] = useState(!_tasteCache);
 
   useEffect(() => {
-    if (cachedData) return;
+    if (_tasteCache) {
+      // Defer into a microtask so setState isn't called synchronously in effect body
+      Promise.resolve(_tasteCache).then((d) => { setData(d); setLoading(false); });
+      return;
+    }
+    if (_tasteFetching) {
+      _tasteFetching.then((d) => { setData(d); setLoading(false); });
+      return;
+    }
     let mounted = true;
-    async function load() {
+    _tasteFetching = (async () => {
       try {
         const [s, m, l] = await Promise.all(
           WINDOWS.map((w) => getTopArtists(w.key, 20))
         );
-        cachedData = { short: s.items, medium: m.items, long: l.items };
-        if (mounted) setData(cachedData);
+        const result = { short: s.items, medium: m.items, long: l.items };
+        _tasteCache = result;
+        return result;
       } catch {
         const mock = MOCK_TOP_ARTISTS.items;
-        cachedData = { short: mock, medium: mock, long: mock };
-        if (mounted) setData(cachedData);
-      } finally {
-        if (mounted) setLoading(false);
+        const result = { short: mock, medium: mock, long: mock };
+        _tasteCache = result;
+        return result;
       }
-    }
-    load();
+    })();
+    _tasteFetching.then((d) => {
+      if (mounted) { setData(d); setLoading(false); }
+    });
     return () => { mounted = false; };
   }, []);
 
