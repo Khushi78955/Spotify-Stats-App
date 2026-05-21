@@ -5,6 +5,8 @@ import Callback from './pages/Callback';
 import Dashboard from './pages/Dashboard';
 import TopTracks from './pages/TopTracks';
 import TopArtists from './pages/TopArtists';
+import Genres from './pages/Genres';
+import Stats from './pages/Stats';
 
 function ProtectedRoute({ children }) {
   if (!isLoggedIn()) return <Navigate to="/" replace />;
@@ -37,6 +39,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <TopArtists />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/genres"
+        element={
+          <ProtectedRoute>
+            <Genres />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/stats"
+        element={
+          <ProtectedRoute>
+            <Stats />
           </ProtectedRoute>
         }
       />

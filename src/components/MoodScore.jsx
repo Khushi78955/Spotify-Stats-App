@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { calculateMoodScores, getVibeLabel, getVibeColor } from '../utils/moodUtils';
+import { calculateMoodScores, calculateMoodFromAudioFeatures, getVibeLabel, getVibeColor } from '../utils/moodUtils';
 import styles from './MoodScore.module.css';
 
 function CircleProgress({ value, label, icon, color }) {
@@ -45,8 +45,12 @@ function CircleProgress({ value, label, icon, color }) {
   );
 }
 
-export default function MoodScore({ artists }) {
-  const scores = useMemo(() => calculateMoodScores(artists), [artists]);
+export default function MoodScore({ artists, audioFeatures }) {
+  const scores = useMemo(
+    () => calculateMoodFromAudioFeatures(audioFeatures) ?? calculateMoodScores(artists),
+    [artists, audioFeatures],
+  );
+  const isReal = !!(audioFeatures?.length);
   const vibe = useMemo(() => getVibeLabel(scores), [scores]);
   const vibeColor = useMemo(() => getVibeColor(vibe), [vibe]);
 
@@ -55,6 +59,7 @@ export default function MoodScore({ artists }) {
       <div className={styles.vibe}>
         <span className={styles.vibeLabel}>Your Vibe</span>
         <span className={styles.vibeName} style={{ color: vibeColor }}>{vibe}</span>
+        <span className={styles.vibeSource}>{isReal ? '● real data' : '● genre estimate'}</span>
       </div>
       <div className={styles.circles}>
         <CircleProgress

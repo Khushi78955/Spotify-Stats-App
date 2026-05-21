@@ -15,11 +15,18 @@ export default function TopTracks() {
 
   useEffect(() => {
     let mounted = true;
-    setLoading(true);
-    getTopTracks(timeRange, 50)
-      .then((data) => { if (mounted) setTracks(data); })
-      .catch(() => { if (mounted) setTracks(MOCK_TOP_TRACKS); })
-      .finally(() => { if (mounted) setLoading(false); });
+    async function load() {
+      setLoading(true);
+      try {
+        const data = await getTopTracks(timeRange, 50);
+        if (mounted) setTracks(data);
+      } catch {
+        if (mounted) setTracks(MOCK_TOP_TRACKS);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
     return () => { mounted = false; };
   }, [timeRange]);
 

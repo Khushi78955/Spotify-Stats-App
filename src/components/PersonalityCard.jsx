@@ -1,7 +1,7 @@
 import { useRef, useMemo, Fragment } from 'react';
 import { downloadPersonalityCard, sharePersonalityCard, canShare } from '../utils/exportUtils';
 import { getTopGenres } from '../utils/genreUtils';
-import { calculateMoodScores, getVibeLabel, calculateDiversityScore } from '../utils/moodUtils';
+import { calculateMoodScores, calculateMoodFromAudioFeatures, getVibeLabel, calculateDiversityScore } from '../utils/moodUtils';
 import styles from './PersonalityCard.module.css';
 
 const PERSONALITIES = {
@@ -39,12 +39,15 @@ function formatMinutes(mins) {
   return `${mins}m`;
 }
 
-export default function PersonalityCard({ user, topTracks, topArtists }) {
+export default function PersonalityCard({ user, topTracks, topArtists, audioFeatures }) {
   const cardRef = useRef(null);
 
   const personality   = useMemo(() => getPersonality(topArtists), [topArtists]);
   const topGenres     = useMemo(() => getTopGenres(topArtists, 4), [topArtists]);
-  const scores        = useMemo(() => calculateMoodScores(topArtists), [topArtists]);
+  const scores        = useMemo(
+    () => calculateMoodFromAudioFeatures(audioFeatures) ?? calculateMoodScores(topArtists),
+    [topArtists, audioFeatures],
+  );
   const vibe          = useMemo(() => getVibeLabel(scores), [scores]);
   const { score: diversityScore, label: diversityLabel, rarities } =
     useMemo(() => calculateDiversityScore(topArtists), [topArtists]);

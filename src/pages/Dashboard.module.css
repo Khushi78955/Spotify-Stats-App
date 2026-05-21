@@ -39,8 +39,18 @@
   color: var(--text-secondary);
 }
 
-.welcome {
+.welcomeRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.welcome {
+  flex: 1;
+  min-width: 0;
 }
 
 .welcomeTitle {

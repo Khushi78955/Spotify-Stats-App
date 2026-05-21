@@ -15,11 +15,18 @@ export default function TopArtists() {
 
   useEffect(() => {
     let mounted = true;
-    setLoading(true);
-    getTopArtists(timeRange, 50)
-      .then((data) => { if (mounted) setArtists(data); })
-      .catch(() => { if (mounted) setArtists(MOCK_TOP_ARTISTS); })
-      .finally(() => { if (mounted) setLoading(false); });
+    async function load() {
+      setLoading(true);
+      try {
+        const data = await getTopArtists(timeRange, 50);
+        if (mounted) setArtists(data);
+      } catch {
+        if (mounted) setArtists(MOCK_TOP_ARTISTS);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
     return () => { mounted = false; };
   }, [timeRange]);
 

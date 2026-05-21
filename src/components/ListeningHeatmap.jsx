@@ -11,14 +11,18 @@ function hourLabel(h) {
 }
 
 export default function ListeningHeatmap({ recentlyPlayed }) {
-  const { grid, maxCount, peakLabel, totalTracks } = useMemo(() => {
+  const { grid, maxCount, peakLabel, totalTracks, dateRange } = useMemo(() => {
     const g = Array.from({ length: 24 }, () => Array(7).fill(0));
     const items = recentlyPlayed?.items ?? [];
 
-    if (!items.length) return { grid: g, maxCount: 0, peakLabel: 'No data yet', totalTracks: 0 };
+    if (!items.length) return { grid: g, maxCount: 0, peakLabel: 'No data yet', totalTracks: 0, dateRange: null };
 
+    let earliest = Infinity, latest = -Infinity;
     for (const item of items) {
       const d = new Date(item.played_at);
+      const t = d.getTime();
+      if (t < earliest) earliest = t;
+      if (t > latest) latest = t;
       g[d.getHours()][d.getDay()]++;
     }
 
@@ -30,10 +34,13 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
     }
 
     const peakLabel = maxCount > 0
-      ? `Peak: ${DAYS[peakD]}s around ${hourLabel(peakH)} — ${items.length} plays sampled`
+      ? `Peak: ${DAYS[peakD]}s around ${hourLabel(peakH)}`
       : 'No data yet';
 
-    return { grid: g, maxCount, peakLabel, totalTracks: items.length };
+    const fmt = (ts) => new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    const dateRange = earliest !== Infinity ? `${fmt(earliest)} – ${fmt(latest)}` : null;
+
+    return { grid: g, maxCount, peakLabel, totalTracks: items.length, dateRange };
   }, [recentlyPlayed]);
 
   function cellColor(count) {
@@ -48,7 +55,9 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.topRow}>
-        <span className={styles.sample}>{totalTracks} plays sampled</span>
+        <span className={styles.sample}>
+          {totalTracks} plays sampled{dateRange ? ` · ${dateRange}` : ''}
+        </span>
         <div className={styles.legend}>
           <span className={styles.legendTxt}>Less</span>
           {[0.04, 0.18, 0.42, 0.7, 1].map((v, i) => (
@@ -82,7 +91,10 @@ export default function ListeningHeatmap({ recentlyPlayed }) {
         </div>
       </div>
 
-      <p className={styles.peak}>{peakLabel}</p>
+      <p className={styles.peak}>
+        {peakLabel}
+        {maxCount > 0 && <span className={styles.peakNote}> · Spotify API returns ~200 recent plays max</span>}
+      </p>
     </div>
   );
 }

@@ -7,6 +7,8 @@ const NAV_LINKS = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/tracks',    label: 'Top Tracks' },
   { to: '/artists',   label: 'Top Artists' },
+  { to: '/genres',    label: 'Genres' },
+  { to: '/stats',     label: 'Stats' },
 ];
 
 export default function Navbar({ user }) {

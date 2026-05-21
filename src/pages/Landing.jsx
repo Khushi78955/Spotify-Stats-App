@@ -1,11 +1,19 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getAuthUrl } from '../auth/SpotifyAuth';
 import { isLoggedIn } from '../auth/SpotifyAuth';
 import styles from './Landing.module.css';
 
+const AUTH_ERRORS = {
+  auth_failed: 'Spotify login was cancelled or denied. Please try again.',
+  token_failed: 'Could not exchange the login code for a token. Please try again.',
+};
+
 export default function Landing() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const errorKey = searchParams.get('error');
+  const errorMsg = errorKey ? (AUTH_ERRORS[errorKey] ?? 'Authentication failed. Please try again.') : null;
 
   useEffect(() => {
     if (isLoggedIn()) navigate('/dashboard');
@@ -18,6 +26,12 @@ export default function Landing() {
 
   return (
     <div className={styles.page}>
+      {errorMsg && (
+        <div className={styles.errorBanner}>
+          <span className={styles.errorIcon}>⚠</span>
+          {errorMsg}
+        </div>
+      )}
       <div className={styles.bgOrbs}>
         <div className={styles.orb1} />
         <div className={styles.orb2} />

@@ -51,6 +51,14 @@ export async function getRecentlyPlayed(limit = 50) {
   return request('/me/player/recently-played', { limit });
 }
 
+// Requires extended quota access on newer Spotify apps (registered after Nov 2023).
+// Returns { audio_features: [...] } or throws on 403/error.
+export async function getAudioFeatures(trackIds) {
+  if (!trackIds?.length) return { audio_features: [] };
+  const ids = trackIds.slice(0, 100).join(',');
+  return request('/audio-features', { ids });
+}
+
 // Paginates recently-played using cursor to collect up to maxItems tracks.
 export async function getRecentlyPlayedBatch(maxItems = 200) {
   const items = [];

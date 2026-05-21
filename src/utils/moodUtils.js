@@ -15,6 +15,18 @@ const MOOD_WEIGHTS = {
   other:      { energy: 0.55, happiness: 0.55, danceability: 0.55 },
 };
 
+// Uses real Spotify audio features (energy, valence, danceability) when available.
+export function calculateMoodFromAudioFeatures(audioFeatures) {
+  const valid = (audioFeatures || []).filter(Boolean);
+  if (!valid.length) return null;
+  const len = valid.length;
+  return {
+    energy:       valid.reduce((s, f) => s + (f.energy       ?? 0.6), 0) / len,
+    happiness:    valid.reduce((s, f) => s + (f.valence      ?? 0.6), 0) / len,
+    danceability: valid.reduce((s, f) => s + (f.danceability ?? 0.6), 0) / len,
+  };
+}
+
 export function calculateMoodScores(artists) {
   if (!artists || artists.length === 0) {
     return { energy: 0.6, happiness: 0.6, danceability: 0.6 };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getUserProfile, getTopTracks, getTopArtists, getRecentlyPlayedBatch } from '../api/spotify';
+import { getUserProfile, getTopTracks, getTopArtists, getRecentlyPlayedBatch, getAudioFeatures } from '../api/spotify';
 import { MOCK_USER, MOCK_TOP_TRACKS, MOCK_TOP_ARTISTS, MOCK_RECENTLY_PLAYED } from '../api/mockData';
 import Navbar from '../components/Navbar';
 import TrackCard from '../components/TrackCard';
@@ -10,8 +10,10 @@ import ListeningHeatmap from '../components/ListeningHeatmap';
 import MoodScore from '../components/MoodScore';
 import DiversityScore from '../components/DiversityScore';
 import PersonalityCard from '../components/PersonalityCard';
+import TimeRangeSelector from '../components/TimeRangeSelector';
 import { SkeletonCard } from '../components/LoadingSpinner';
 import ErrorBoundary from '../components/ErrorBoundary';
+import { useTimeRange } from '../hooks/useTimeRange';
 import { getTopGenres } from '../utils/genreUtils';
 import styles from './Dashboard.module.css';
 
@@ -26,42 +28,85 @@ function StatCard({ label, value, icon, color }) {
 }
 
 export default function Dashboard() {
+  const [timeRange, setTimeRange] = useTimeRange();
   const [user, setUser] = useState(null);
   const [tracks, setTracks] = useState(null);
   const [artists, setArtists] = useState(null);
   const [recent, setRecent] = useState(null);
+  const [audioFeatures, setAudioFeatures] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [demoMode, setDemoMode] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
+  // Load user profile + recently played once (not time-range dependent)
   useEffect(() => {
     let mounted = true;
-    async function load() {
+    async function init() {
       try {
-        const [u, t, a, r] = await Promise.all([
+        const [u, r] = await Promise.all([
           getUserProfile(),
-          getTopTracks('medium_term', 50),
-          getTopArtists('medium_term', 50),
           getRecentlyPlayedBatch(200),
         ]);
         if (!mounted) return;
         setUser(u);
-        setTracks(t);
-        setArtists(a);
         setRecent(r);
-      } catch (e) {
+      } catch {
         if (!mounted) return;
         setUser(MOCK_USER);
+        setRecent(MOCK_RECENTLY_PLAYED);
+        setDemoMode(true);
+      } finally {
+        if (mounted) setInitialized(true);
+      }
+    }
+    init();
+    return () => { mounted = false; };
+  }, []);
+
+  // Reload tracks + artists when time range changes (or after init)
+  useEffect(() => {
+    if (!initialized) return;
+    let mounted = true;
+
+    async function loadRange() {
+      if (demoMode) {
         setTracks(MOCK_TOP_TRACKS);
         setArtists(MOCK_TOP_ARTISTS);
-        setRecent(MOCK_RECENTLY_PLAYED);
-        setError('Using demo data — connect Spotify for your real stats.');
+        setAudioFeatures(null);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        const [t, a] = await Promise.all([
+          getTopTracks(timeRange, 50),
+          getTopArtists(timeRange, 50),
+        ]);
+        if (!mounted) return;
+        setTracks(t);
+        setArtists(a);
+
+        // Fetch audio features best-effort (restricted on newer Spotify apps — graceful fallback)
+        try {
+          const ids = t.items.slice(0, 100).map((x) => x.id);
+          const af = await getAudioFeatures(ids);
+          if (mounted) setAudioFeatures(af?.audio_features?.filter(Boolean) || null);
+        } catch {
+          if (mounted) setAudioFeatures(null);
+        }
+      } catch {
+        if (!mounted) return;
+        setTracks(MOCK_TOP_TRACKS);
+        setArtists(MOCK_TOP_ARTISTS);
+        setAudioFeatures(null);
+        setDemoMode(true);
       } finally {
         if (mounted) setLoading(false);
       }
     }
-    load();
+    loadRange();
     return () => { mounted = false; };
-  }, []);
+  }, [timeRange, initialized, demoMode]);
 
   const topGenres = artists ? getTopGenres(artists.items, 3) : [];
   const topGenreLabel = topGenres[0]?.genre || '—';
@@ -71,7 +116,7 @@ export default function Dashboard() {
       <Navbar user={user} />
       <div className={`page ${styles.page}`}>
         <div className="container">
-          {error && (
+          {demoMode && (
             <div className={styles.demoBanner}>
               <span className={styles.demoBadge}>
                 <span className={styles.demoBadgeDot} />
@@ -83,11 +128,14 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div className={styles.welcome}>
-            <h1 className={styles.welcomeTitle}>
-              Welcome back{user?.display_name ? `, ${user.display_name.split(' ')[0]}` : ''}
-            </h1>
-            <p className={styles.welcomeSub}>Here's your listening overview</p>
+          <div className={styles.welcomeRow}>
+            <div className={styles.welcome}>
+              <h1 className={styles.welcomeTitle}>
+                Welcome back{user?.display_name ? `, ${user.display_name.split(' ')[0]}` : ''}
+              </h1>
+              <p className={styles.welcomeSub}>Here's your listening overview</p>
+            </div>
+            <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
           </div>
 
           {loading ? (
@@ -139,7 +187,10 @@ export default function Dashboard() {
             {/* Genre Chart */}
             <ErrorBoundary label="Genre Breakdown">
               <div className={`card ${styles.section}`}>
-                <h2 className={styles.sectionTitle}>Genre Breakdown</h2>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Genre Breakdown</h2>
+                  <a href="/genres" className={styles.seeAll}>See all →</a>
+                </div>
                 {loading
                   ? <SkeletonCard height={220} />
                   : <GenreChart artists={artists?.items || []} />
@@ -161,7 +212,10 @@ export default function Dashboard() {
             {/* Heatmap */}
             <ErrorBoundary label="Listening Patterns">
               <div className={`card ${styles.section}`}>
-                <h2 className={styles.sectionTitle}>Listening Patterns</h2>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Listening Patterns</h2>
+                  <a href="/stats" className={styles.seeAll}>See full →</a>
+                </div>
                 {loading
                   ? <SkeletonCard height={180} />
                   : <ListeningHeatmap recentlyPlayed={recent} />
@@ -172,10 +226,13 @@ export default function Dashboard() {
             {/* Mood */}
             <ErrorBoundary label="Mood Analysis">
               <div className={`card ${styles.section}`}>
-                <h2 className={styles.sectionTitle}>Mood Analysis</h2>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Mood Analysis</h2>
+                  <a href="/stats" className={styles.seeAll}>See full →</a>
+                </div>
                 {loading
                   ? <SkeletonCard height={180} />
-                  : <MoodScore artists={artists?.items || []} />
+                  : <MoodScore artists={artists?.items || []} audioFeatures={audioFeatures} />
                 }
               </div>
             </ErrorBoundary>
@@ -183,7 +240,10 @@ export default function Dashboard() {
             {/* Diversity Score */}
             <ErrorBoundary label="Listening Diversity">
               <div className={`card ${styles.section}`}>
-                <h2 className={styles.sectionTitle}>Listening Diversity</h2>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Listening Diversity</h2>
+                  <a href="/stats" className={styles.seeAll}>See full →</a>
+                </div>
                 {loading
                   ? <SkeletonCard height={180} />
                   : <DiversityScore artists={artists?.items || []} />
@@ -202,6 +262,7 @@ export default function Dashboard() {
                       user={user}
                       topTracks={tracks?.items || []}
                       topArtists={artists?.items || []}
+                      audioFeatures={audioFeatures}
                     />
                   )
                 }

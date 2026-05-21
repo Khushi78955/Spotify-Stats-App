@@ -64,3 +64,8 @@
   text-align: center;
   margin: 0;
 }
+
+.peakNote {
+  color: var(--text-muted);
+  font-weight: 400;
+}

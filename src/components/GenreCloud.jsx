@@ -14,7 +14,6 @@ export default function GenreCloud({ artists }) {
   return (
     <div className={styles.cloud}>
       {genres.map((g, i) => {
-        const scale = 0.7 + (g.count / maxCount) * 0.8;
         const opacity = 0.5 + (g.count / maxCount) * 0.5;
         return (
           <div

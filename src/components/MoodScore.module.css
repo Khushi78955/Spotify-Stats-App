@@ -19,6 +19,12 @@
   letter-spacing: 0.08em;
 }
 
+.vibeSource {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
 .vibeName {
   font-family: 'Syne', sans-serif;
   font-size: 22px;
